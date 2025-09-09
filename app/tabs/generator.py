@@ -26,8 +26,9 @@ def render():
 
         adherence = st.slider("Aspect adherence", 0.0, 1.0, 0.75, key="gen_adherence", help="Higher = stricter shaping.")
         num_colors = st.slider("Number of colors", 2, 5, 3, key="gen_num_colors")
-        default_hexes = ["#273c6b", "#92323d", "#bd9562", "#9ca963", "#bf925b"]
+        default_hexes = ["#273c6b", "#92323d", "#D8C03F", "#9ca963", "#B77525"]
         colors, counts = [], []
+        st.markdown("**Colors & Counts** (click to set color)")
         for i in range(num_colors):
             c1,c2 = st.columns([1,1])
             with c1: col_hex = st.color_picker(f"Color {i+1}", default_hexes[i], key=f"gen_color_{i}")
