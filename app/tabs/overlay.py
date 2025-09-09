@@ -34,19 +34,16 @@ def render():
         selected_pattern_key = st.selectbox("Select a Pattern", options=pattern_keys, key="overlay_pattern")
         st.markdown("---")
         if st.button("Reset Overlay Position/Size"):
-            st.session_state.active_wall_image_bytes = None # This will trigger a re-center
+            st.session_state.active_wall_image_bytes = None
             st.rerun()
 
     st.header("Overlay Visualizer")
     
-    # Check if a new image has been uploaded that we need to process
     if (st.session_state.get('uploaded_wall_image_bytes') and 
         st.session_state.uploaded_wall_image_bytes != st.session_state.get('active_wall_image_bytes')):
         
-        # A new image is ready. Make it active.
         st.session_state.active_wall_image_bytes = st.session_state.uploaded_wall_image_bytes
         
-        # Perform the one-time centering calculation
         bg_image = Image.open(io.BytesIO(st.session_state.active_wall_image_bytes))
         pattern_data = st.session_state.pattern_objects[selected_pattern_key]
         pattern_img = Image.open(io.BytesIO(pattern_data["png_bytes"]))
@@ -58,15 +55,12 @@ def render():
         bg_longest = max(bg_image.size); overlay_longest = max(pattern_img.size)
         initial_scale = (bg_longest * 0.50) / overlay_longest
         
-        # Update the overlay state directly
         st.session_state.overlay_state = {
             "left": initial_left, "top": initial_top,
             "scaleX": initial_scale, "scaleY": initial_scale
         }
-        # CRITICAL: Rerun to make the canvas draw with this new centered state
         st.rerun()
 
-    # The main rendering logic only runs if there's an active image
     if st.session_state.get('active_wall_image_bytes'):
         bg_image_bytes = st.session_state.active_wall_image_bytes
         bg_image = Image.open(io.BytesIO(bg_image_bytes))
@@ -93,8 +87,12 @@ def render():
                 st.session_state.overlay_state.update(new_state)
                 st.rerun()
 
-        w_in = selected_pattern_data['width_in'] * overlay_state.get("scaleX", 1.0)
-        h_in = selected_pattern_data['height_in'] * overlay_state.get("scaleY", 1.0)
-        st.info(f"**Scaled Dimensions:** {w_in:.1f} in wide × {h_in:.1f} in high")
+        # --- THIS IS THE CORRECTED LOGIC ---
+        # Display the fixed, physical dimensions of the selected layout, ignoring visual scaling.
+        w_in = selected_pattern_data['width_in']
+        h_in = selected_pattern_data['height_in']
+        st.info(f"**Physical Layout Dimensions:** {w_in:.1f} inches wide × {h_in:.1f} inches high")
+        # --- END OF CORRECTION ---
+
     else:
         st.info("Upload an image of a wall to begin.")
