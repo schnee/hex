@@ -8,6 +8,9 @@ def render():
     st.markdown("""
     This tool is designed for interior designers, architects, and DIY enthusiasts to create and visualize
     custom layouts for hexagonal wall panels, such as acoustic or decorative tiles.
+                
+    The tool was inspired by an installation based on the [Ekkogo Acoustic Panels](https://www.ekkogo.com/), which are popular for their
+    sound-absorbing properties and aesthetic appeal.
     """)
     
     st.subheader("🎯 Purpose & Features")
