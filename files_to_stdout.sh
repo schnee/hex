@@ -23,9 +23,9 @@ FILES=(
   "streamlit_app.py"
   "app/__init__.py"
   "app/hex_tile_layouts_core.py"
-  "app/tabs/about.py"
   "app/tabs/generator.py"
-  "app/tabs/ui.py"
+  "app/tabs/overlay.py"
+  "app/tabs/about.py"
   "files_to_stdout.sh"
 )
 
