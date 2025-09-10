@@ -1,64 +1,63 @@
-# ===== FILE: app/tabs/about.py =====
+# app/tabs/about.py
 import streamlit as st
 
 def render():
-    """Renders the comprehensive About tab."""
+    """Render the About tab with updated info and references."""
     st.header("About The Hex Layout Toolkit")
-    
+
     st.markdown("""
-    This tool is designed for interior designers, architects, and DIY enthusiasts to create and visualize
-    custom layouts for hexagonal wall panels, such as acoustic or decorative tiles.
-                
-    The tool was inspired by an installation based on the [Ekkogo Acoustic Panels](https://www.ekkogo.com/), which are popular for their
-    sound-absorbing properties and aesthetic appeal.
-    """)
-    
-    st.subheader("🎯 Purpose & Features")
-    st.markdown("""
-    - **Aspect-aware Shaping**: Generate organic, blob-like clusters of tiles that intelligently conform to a desired height and width, making it easy to design for specific wall spaces.
-    - **Dynamic Tendrils**: Add optional "tendrils" or runners to your main cluster for a more dynamic, less rigid aesthetic that can flow across a wall.
-    - **Rich Color Strategies**: Move beyond simple random layouts with sophisticated color assignment algorithms to achieve intentional design goals.
-    - **Interactive Visualization**: Upload a photo of your own wall and place the generated design directly onto it. Move and scale the overlay to find the perfect position.
-    """)
-    
-    st.subheader("🎨 Color Strategies Explained")
-    st.markdown("""
-    The heart of this tool is its ability to distribute colors thoughtfully.
-    
-    - **Random**: This is the most straightforward approach. It shuffles all the tiles of the colors you've chosen (respecting the counts you set for each) and distributes them randomly throughout the layout.
-    
-    - **Gradient**: This strategy assigns colors along a directional axis, creating a smooth visual flow. This is perfect for designs that need to feel like they are moving or fading across a wall. You can control the gradient's direction:
-        - `auto` or `principal`: Finds the longest axis of your generated shape and creates the gradient along it.
-        - `x` or `y`: Forces the gradient to flow horizontally or vertically.
-    
-    - **Scheme60**: This applies the classic **60-30-10 Rule** from interior design. It's a time-tested principle for creating a balanced and visually appealing color palette.
-        - **60% Dominant Color**: Forms the main body of the layout, typically placed in the center.
-        - **30% Secondary Color**: Complements the dominant color and is placed in a ring around it.
-        - **10% Accent Color**: Used sparingly on the outer edges to add visual interest and pop.
+    This application helps designers, architects, and DIY enthusiasts create **custom hexagonal tile layouts**
+    for acoustic panels, decorative walls, and other interior design projects.
+
+    ---
     """)
 
-    st.subheader("📚 Inspiration & Further Reading")
+    st.subheader("🎯 Purpose & Features")
     st.markdown("""
-    The concepts used in this tool are based on established principles in design and mathematics.
-    
-    - **Color Theory: The 60-30-10 Rule**
-        - A great overview of this principle from Sherwin-Williams:
-        - [Learn About the 60-30-10 Rule](https://www.sherwin-williams.com/en-us/color/color-basics/color-theory/the-60-30-10-rule)
-    
-    - **Hexagonal Grids**
-        - The underlying math for pointy-top hex grids is complex and fascinating. The definitive guide is from Red Blob Games:
-        - [Hexagonal Grids Guide](https://www.redblobgames.com/grids/hexagons/)
-        
-    - **Design & Composition**
-        - The principles of aspect ratio and visual balance are fundamental to good design. Canva provides a good introduction to concepts like the Golden Ratio:
-        - [The Golden Ratio in Design](https://www.canva.com/learn/golden-ratio-design/)
+    - **Aspect-Aware Layouts**: Generate organic, blob-like clusters that respect your target aspect ratio.
+    - **Dynamic Tendrils**: Add optional tendrils for a more fluid, less rigid aesthetic.
+    - **Flexible Color Strategies**:
+        - **Random**: Shuffle colors while respecting your counts.
+        - **Gradient**: Assign colors along a directional axis (auto, x, y, or principal).
+        - **Scheme60**: Apply the 60-30-10 rule for balanced palettes.
+    - **Color Picker Support**: Define up to **5 custom colors** with individual tile counts.
+    - **Gradient Order Control**: Drag to reorder colors for gradient mode.
+    - **Scheme60 Roles**: Assign dominant, secondary, and accent roles by index.
+    - **Transparent PNG Export**: Download overlay-ready images for real-world previews.
+    - **Overlay Visualizer**: Upload a wall photo, drag and scale your design interactively.
     """)
-    
-    st.subheader("📐 A Note on Geometry & Scaling")
+
+    st.subheader("📐 Geometry & Scaling")
     st.markdown("""
-    - All tiles are modeled as **pointy-top hexagons**.
-    - For the "Scaled Dimensions" display in the Overlay tool, we assume a real-world dimension for a standard acoustic panel: **12 inches from tip to tip**. This corresponds to a circumradius of 6 inches, which is used to calculate the overall size of your design.
+    - Tiles are modeled as **pointy-top hexagons**.
+    - Real-world assumption: **tip-to-tip = 12 in** → circumradius = 6 in.
+    - Bounding box dimensions are displayed in **inches** for practical planning.
     """)
-    
+
+    st.subheader("🎨 Color Theory References")
+    st.markdown("""
+    - **60-30-10 Rule**: A classic interior design principle for color balance.
+        - https://www.sherwin-williams.com/en-us/color/color-basics/color-theory/the-60-30-10-rule
+    - **Gradient Design**: Visual hierarchy and directional flow in UI and interiors.
+        - https://uxdesign.cc/gradients-in-ui-design-8f8f1f4f1f4f
+    """)
+
+    st.subheader("🔍 External References")
+    st.markdown("""
+    - **Hexagonal Grids**:
+        - [Red Blob Games: Hexagonal Grids](https://www.redblobgames.com/gridsComposition**:
+        - [Canva: Golden Ratio in Design](https://www.canva.com- **Color Accessibility**:
+        - https://webaim.org/resources/contrastchecker/
+    """)
+
+    st.subheader("✅ Next Steps")
+    st.markdown("""
+    - Add **Overlay Page** enhancements:
+        - Sticky drag (no reruns while moving)
+        - Save placement & Reset
+        - Export at original resolution
+    - Optional: **Print-ready specs** and **DXF export** for fabrication.
+    """)
+
     st.markdown("---")
-    st.write("**Version**: 4.1 (Modular UI)")
+    st.write("**Version**: 4.2 (Modular + Color Picker)")
