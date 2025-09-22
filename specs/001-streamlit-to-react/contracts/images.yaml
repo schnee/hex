@@ -1,0 +1,211 @@
+openapi: 3.0.0
+info:
+  title: Image Upload API
+  version: 2.0.0
+  description: API for uploading and processing wall images
+
+paths:
+  /api/images/upload:
+    post:
+      summary: Upload and process wall image
+      description: Upload a wall image for overlay visualization, with automatic resizing
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Image file (PNG, JPG, JPEG)
+                max_dimension:
+                  type: integer
+                  minimum: 200
+                  maximum: 2000
+                  default: 800
+                  description: Maximum dimension for resizing
+      responses:
+        '200':
+          description: Image uploaded and processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+        '400':
+          description: Invalid file or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: File too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported file type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/overlay/calculate:
+    post:
+      summary: Calculate overlay dimensions
+      description: Calculate physical dimensions for a pattern overlay
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OverlayRequest'
+      responses:
+        '200':
+          description: Dimensions calculated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OverlayResponse'
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    UploadResponse:
+      type: object
+      required:
+        - image_id
+        - width
+        - height
+        - processed_data
+      properties:
+        image_id:
+          type: string
+          description: Unique identifier for uploaded image
+          example: "img_uuid_123"
+        width:
+          type: integer
+          description: Processed image width in pixels
+          example: 800
+        height:
+          type: integer
+          description: Processed image height in pixels  
+          example: 600
+        processed_data:
+          type: string
+          description: Base64-encoded processed image data
+        format:
+          type: string
+          enum: ["JPEG", "PNG"]
+          description: Image format after processing
+        original_size:
+          type: object
+          properties:
+            width:
+              type: integer
+            height:
+              type: integer
+          description: Original image dimensions before processing
+
+    OverlayRequest:
+      type: object
+      required:
+        - image_id
+        - pattern_id
+        - overlay_state
+      properties:
+        image_id:
+          type: string
+          description: Uploaded image identifier
+        pattern_id:
+          type: string
+          description: Generated pattern identifier
+        overlay_state:
+          $ref: '#/components/schemas/OverlayState'
+
+    OverlayState:
+      type: object
+      required:
+        - left
+        - top
+        - scaleX
+        - scaleY
+      properties:
+        left:
+          type: number
+          description: X position offset in pixels
+        top:
+          type: number
+          description: Y position offset in pixels
+        scaleX:
+          type: number
+          minimum: 0.1
+          maximum: 10.0
+          description: Horizontal scale factor
+        scaleY:
+          type: number
+          minimum: 0.1
+          maximum: 10.0
+          description: Vertical scale factor
+        rotation:
+          type: number
+          minimum: -180
+          maximum: 180
+          default: 0
+          description: Rotation angle in degrees
+
+    OverlayResponse:
+      type: object
+      required:
+        - physical_dimensions
+        - visual_dimensions
+      properties:
+        physical_dimensions:
+          type: object
+          required:
+            - width_inches
+            - height_inches
+          properties:
+            width_inches:
+              type: number
+              description: Physical width in inches
+            height_inches:
+              type: number
+              description: Physical height in inches
+        visual_dimensions:
+          type: object
+          required:
+            - width_px
+            - height_px
+          properties:
+            width_px:
+              type: number
+              description: Visual width in pixels on screen
+            height_px:
+              type: number
+              description: Visual height in pixels on screen
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error type
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error context

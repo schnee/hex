@@ -1,0 +1,52 @@
+{
+  "commands": {
+    "/check": {
+      "description": "Check spec-kit prerequisites and documentation status",
+      "category": "spec-kit",
+      "action": "run_script",
+      "script": ".specify/scripts/bash/check-prerequisites.sh"
+    },
+    "/plan": {
+      "description": "Create implementation plan from feature specification",
+      "category": "spec-kit", 
+      "action": "run_script",
+      "script": ".specify/scripts/bash/setup-plan.sh"
+    },
+    "/tasks": {
+      "description": "Generate executable tasks from implementation plan",
+      "category": "spec-kit",
+      "action": "claude_command",
+      "prompt": "Generate tasks from the implementation plan using spec-kit methodology"
+    },
+    "/status": {
+      "description": "Show current project status and active specifications", 
+      "category": "spec-kit",
+      "action": "claude_command",
+      "prompt": "Show spec-kit project status including current features and documentation"
+    },
+    "/new-feature": {
+      "description": "Create new feature branch and directory structure",
+      "category": "spec-kit",
+      "action": "run_script", 
+      "script": ".specify/scripts/bash/create-new-feature.sh"
+    },
+    "/complete": {
+      "description": "Mark task as complete in tasks.md and commit the update",
+      "category": "task-management",
+      "action": "claude_command",
+      "prompt": "Mark the specified task ID as complete in specs/001-streamlit-to-react/tasks.md by changing [ ] to [x] and adding a ✅ emoji. Then commit the change with a descriptive message. Ask for the task ID if not provided. Example usage: /complete T025"
+    },
+    "/task-status": {
+      "description": "Show current task completion status and next tasks",
+      "category": "task-management", 
+      "action": "run_script",
+      "script": "scripts/task-status.sh"
+    },
+    "/done": {
+      "description": "Quick script to mark task complete and commit (usage: /done T025)",
+      "category": "task-management",
+      "action": "run_script",
+      "script": "scripts/complete-task.sh"
+    }
+  }
+}

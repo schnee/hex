@@ -1,0 +1,268 @@
+openapi: 3.0.0
+info:
+  title: Hex Layout Toolkit API
+  version: 2.0.0
+  description: REST API for hexagonal tile pattern generation and visualization
+
+paths:
+  /api/patterns/generate:
+    post:
+      summary: Generate hexagonal tile patterns
+      description: Create one or more hexagonal tile layouts based on configuration parameters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateRequest'
+            example:
+              aspect_w: 16
+              aspect_h: 9
+              aspect_adherence: 0.75
+              total_tiles: 36
+              colors: ["#273c6b", "#92323d", "#D8C03F"]
+              counts: [12, 12, 12]
+              color_mode: "random"
+              tendrils: 3
+              tendril_len_min: 2
+              tendril_len_max: 4
+              radius: 1.0
+              seed: 123
+              num_layouts: 4
+      responses:
+        '200':
+          description: Successfully generated patterns
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateResponse'
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Generation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/patterns/{pattern_id}/download:
+    get:
+      summary: Download pattern as PNG
+      description: Get the raw PNG file for a generated pattern
+      parameters:
+        - name: pattern_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "pattern_123_0"
+      responses:
+        '200':
+          description: PNG file
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Pattern not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    GenerateRequest:
+      type: object
+      required:
+        - aspect_w
+        - aspect_h
+        - total_tiles
+        - colors
+        - counts
+        - color_mode
+        - seed
+        - num_layouts
+      properties:
+        aspect_w:
+          type: number
+          minimum: 0.1
+          maximum: 100
+          description: Width component of target aspect ratio
+        aspect_h:
+          type: number
+          minimum: 0.1
+          maximum: 100
+          description: Height component of target aspect ratio
+        aspect_adherence:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+          default: 0.75
+          description: Strictness of aspect ratio conformance
+        total_tiles:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          description: Total number of hexagonal tiles
+        colors:
+          type: array
+          items:
+            type: string
+            pattern: '^#[0-9A-Fa-f]{6}$'
+          minItems: 1
+          maxItems: 5
+          description: Hex color codes
+        counts:
+          type: array
+          items:
+            type: integer
+            minimum: 0
+          description: Number of tiles per color (must sum to total_tiles)
+        color_mode:
+          type: string
+          enum: ["random", "gradient", "scheme60"]
+          description: Color assignment strategy
+        gradient_axis:
+          type: string
+          enum: ["auto", "x", "y", "principal"]
+          default: "auto"
+          description: Gradient direction (gradient mode only)
+        gradient_order:
+          type: array
+          items:
+            type: integer
+          description: Color sequence indices (gradient mode only)
+        roles:
+          type: object
+          properties:
+            dominant:
+              type: integer
+            secondary:
+              type: integer
+            accent:
+              type: integer
+          description: Color role assignments (scheme60 mode only)
+        tendrils:
+          type: integer
+          minimum: 0
+          maximum: 8
+          default: 3
+          description: Number of organic extensions
+        tendril_len_min:
+          type: integer
+          minimum: 1
+          maximum: 8
+          default: 2
+          description: Minimum tendril length
+        tendril_len_max:
+          type: integer
+          minimum: 1
+          maximum: 8
+          default: 4
+          description: Maximum tendril length
+        radius:
+          type: number
+          minimum: 0.6
+          maximum: 2.0
+          default: 1.0
+          description: Hexagon visual radius
+        seed:
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+          description: Random number seed for reproducibility
+        num_layouts:
+          type: integer
+          minimum: 1
+          maximum: 12
+          description: Number of pattern variations to generate
+
+    GenerateResponse:
+      type: object
+      required:
+        - patterns
+      properties:
+        patterns:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pattern'
+
+    Pattern:
+      type: object
+      required:
+        - id
+        - seed
+        - width_inches
+        - height_inches
+        - aspect_ratio
+        - aspect_deviation
+        - png_data
+        - hexes
+        - colors
+      properties:
+        id:
+          type: string
+          description: Unique pattern identifier
+        seed:
+          type: integer
+          description: Seed used for generation
+        width_inches:
+          type: number
+          description: Physical width in inches
+        height_inches:
+          type: number
+          description: Physical height in inches
+        aspect_ratio:
+          type: number
+          description: Actual achieved aspect ratio
+        aspect_deviation:
+          type: number
+          description: Percentage deviation from target ratio
+        png_data:
+          type: string
+          description: Base64-encoded PNG image
+        hexes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hex'
+          description: Hexagon coordinate positions
+        colors:
+          type: array
+          items:
+            type: string
+          description: Color assignment per hexagon
+
+    Hex:
+      type: object
+      required:
+        - q
+        - r
+      properties:
+        q:
+          type: integer
+          description: Axial coordinate q
+        r:
+          type: integer
+          description: Axial coordinate r
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error type
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error context
