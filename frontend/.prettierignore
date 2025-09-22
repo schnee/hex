@@ -1,0 +1,40 @@
+# Build outputs
+dist/
+build/
+
+# Dependencies
+node_modules/
+
+# Coverage reports
+coverage/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
+# Generated files
+*.min.js
+*.min.css
+
+# Package files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Config files that shouldn't be formatted
+.eslintrc.cjs
+vite.config.ts
+tsconfig*.json
+
+# Images and fonts
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.woff
+*.woff2
+*.eot
+*.ttf
