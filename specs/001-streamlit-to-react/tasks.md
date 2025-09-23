@@ -52,7 +52,7 @@
 
 ### Frontend Component Tests
 - [x] T013 [P] Component test PatternGenerator form validation in frontend/tests/components/test_PatternGenerator.test.tsx ✅
-- [ ] T014 [P] Component test OverlayViewer drag interactions in frontend/tests/components/test_OverlayViewer.test.tsx
+- [x] T014 [P] Component test OverlayViewer drag interactions in frontend/tests/components/test_OverlayViewer.test.tsx ✅
 - [ ] T015 [P] Component test PatternDisplay grid layout in frontend/tests/components/test_PatternDisplay.test.tsx
 
 ### Frontend Integration Tests
