@@ -57,7 +57,7 @@
 
 ### Frontend Integration Tests
 - [x] T016 [P] Integration test pattern generation flow in frontend/tests/integration/test_pattern_flow.test.tsx ✅
-- [ ] T017 [P] Integration test overlay positioning flow in frontend/tests/integration/test_overlay_flow.test.tsx
+- [x] T017 [P] Integration test overlay positioning flow in frontend/tests/integration/test_overlay_flow.test.tsx ✅
 
 ## Phase 3.3: Core Implementation (ONLY after tests are failing)
 
