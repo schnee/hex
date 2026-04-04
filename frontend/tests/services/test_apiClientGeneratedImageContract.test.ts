@@ -17,6 +17,9 @@ const requestPayload: GenerateRequest = {
   num_layouts: 1,
 };
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
 describe('apiClient generated image contract normalization', () => {
   afterEach(() => {
     vi.restoreAllMocks();
@@ -92,7 +95,7 @@ describe('apiClient generated image contract normalization', () => {
     expect(typeof result?.size).toBe('number');
     expect(result?.type).toBe('image/png');
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      'http://localhost:8000/api/patterns/pattern_7_0/download'
+      `${API_BASE_URL}/api/patterns/pattern_7_0/download`
     );
   });
 
