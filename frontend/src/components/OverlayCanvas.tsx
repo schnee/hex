@@ -233,7 +233,6 @@ export const OverlayCanvas: React.FC<OverlayCanvasProps> = ({
                     }}
                   />
                 </div>
-
               </ResizableBox>
             </div>
           </Draggable>

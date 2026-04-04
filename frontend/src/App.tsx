@@ -31,7 +31,9 @@ const INITIAL_OVERLAY_STATE: OverlayState = {
 
 const BASE_OVERLAY_SIZE_PX = 100;
 
-const getBoundedInitialOverlayState = (image: UploadResponse): OverlayState => ({
+const getBoundedInitialOverlayState = (
+  image: UploadResponse
+): OverlayState => ({
   ...INITIAL_OVERLAY_STATE,
   left: Math.max(
     0,

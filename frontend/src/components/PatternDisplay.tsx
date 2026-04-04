@@ -384,7 +384,6 @@ export const PatternDisplay: React.FC<PatternDisplayProps> = ({
                 >
                   {hexCount} {hexCount === 1 ? 'hex' : 'hexes'}
                 </div>
-
               </div>
 
               {/* Download Button (shown on hover) */}
