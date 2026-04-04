@@ -63,9 +63,25 @@ gcloud services enable \
 
 Run commands from repository root (`hex/`).
 
-### 2.1 Initial deploy (no frontend URL yet)
+### 2.1 Create backend env file for Cloud Run
 
-Deploy once to get a stable backend URL. For first deploy, allow localhost origins plus a temporary placeholder.
+Store Cloud Run environment variables in a tracked template-style file so deploy and update commands stay consistent.
+
+Create `backend/cloudrun.env`:
+
+```dotenv
+CORS_ALLOW_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+```
+
+Notes:
+
+- Use one `KEY=VALUE` per line
+- Do not wrap values in quotes
+- Use comma-separated origins for `CORS_ALLOW_ORIGINS`
+
+### 2.2 Initial deploy (using env file)
+
+Deploy once to get a stable backend URL:
 
 ```bash
 gcloud run deploy hex-layout-backend \
@@ -73,7 +89,7 @@ gcloud run deploy hex-layout-backend \
   --region us-central1 \
   --platform managed \
   --allow-unauthenticated \
-  --set-env-vars "CORS_ALLOW_ORIGINS=http://localhost:3000,http://127.0.0.1:3000"
+  --env-vars-file backend/cloudrun.env
 ```
 
 When deployment finishes, copy the service URL (example):
@@ -82,7 +98,7 @@ When deployment finishes, copy the service URL (example):
 https://hex-layout-backend-xxxxx-uc.a.run.app
 ```
 
-### 2.2 Smoke test backend
+### 2.3 Smoke test backend
 
 ```bash
 curl https://<your-cloud-run-url>/api/health
@@ -95,7 +111,7 @@ Expected health response:
 {"status":"healthy"}
 ```
 
-### 2.3 Useful Cloud Run operations
+### 2.4 Useful Cloud Run operations
 
 View service details:
 
@@ -162,20 +178,24 @@ https://hex-layout-frontend.pages.dev
 
 Now that you have the real Pages URL, update backend CORS so browser API calls are allowed.
 
-If you only use the default `pages.dev` domain:
+Update `backend/cloudrun.env` with your real frontend origin, for example:
 
-```bash
-gcloud run services update hex-layout-backend \
-  --region us-central1 \
-  --set-env-vars "CORS_ALLOW_ORIGINS=https://hex-layout-frontend.pages.dev"
+```dotenv
+CORS_ALLOW_ORIGINS=https://hex-layout-frontend.pages.dev
 ```
 
-If you use multiple origins (recommended during rollout):
+If you use multiple origins (recommended during rollout), keep them comma-separated:
+
+```dotenv
+CORS_ALLOW_ORIGINS=https://hex-layout-frontend.pages.dev,https://hex.yourdomain.com,http://localhost:3000
+```
+
+Then apply the updated env file:
 
 ```bash
 gcloud run services update hex-layout-backend \
   --region us-central1 \
-  --set-env-vars "CORS_ALLOW_ORIGINS=https://hex-layout-frontend.pages.dev,https://hex.yourdomain.com,http://localhost:3000"
+  --env-vars-file backend/cloudrun.env
 ```
 
 Re-test from browser after update.
@@ -208,12 +228,18 @@ curl https://<your-cloud-run-url>/api/health
 
 ### 6.2 Update CORS for custom frontend domain
 
-Add custom domain origin to Cloud Run:
+Add custom domain origin in `backend/cloudrun.env`, for example:
+
+```dotenv
+CORS_ALLOW_ORIGINS=https://hex.yourdomain.com,https://hex-layout-frontend.pages.dev
+```
+
+Then apply it to Cloud Run:
 
 ```bash
 gcloud run services update hex-layout-backend \
   --region us-central1 \
-  --set-env-vars "CORS_ALLOW_ORIGINS=https://hex.yourdomain.com,https://hex-layout-frontend.pages.dev"
+  --env-vars-file backend/cloudrun.env
 ```
 
 ---
@@ -239,7 +265,7 @@ npx wrangler pages deploy dist --project-name hex-layout-frontend
 ### CORS error in browser
 
 - Cause: Pages/custom domain not included in `CORS_ALLOW_ORIGINS`
-- Fix: update Cloud Run env var and redeploy revision via `gcloud run services update`
+- Fix: update `backend/cloudrun.env` and apply via `gcloud run services update --env-vars-file backend/cloudrun.env`
 
 ### Frontend calls localhost in production
 
@@ -251,6 +277,11 @@ npx wrangler pages deploy dist --project-name hex-layout-frontend
 - Check APIs enabled in section 1.3
 - Check billing is active
 - Read build logs in Cloud Console or with `gcloud run services logs read`
+
+### Cloud Run update ignores expected env changes
+
+- Cause: command used inline `--set-env-vars` instead of the shared file workflow
+- Fix: make the change in `backend/cloudrun.env`, then run `gcloud run services update ... --env-vars-file backend/cloudrun.env`
 
 ### 404 on direct URL refresh in frontend routes
 
