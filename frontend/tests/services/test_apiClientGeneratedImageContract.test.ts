@@ -87,7 +87,9 @@ describe('apiClient generated image contract normalization', () => {
 
     const result = await downloadPattern('pattern_7_0');
 
-    expect(result).toBeInstanceOf(Blob);
+    expect(result).not.toBeNull();
+    expect(Object.prototype.toString.call(result)).toBe('[object Blob]');
+    expect(typeof result?.size).toBe('number');
     expect(result?.type).toBe('image/png');
     expect(globalThis.fetch).toHaveBeenCalledWith(
       'http://localhost:8000/api/patterns/pattern_7_0/download'
