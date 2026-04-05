@@ -52,9 +52,18 @@ Phase order is strict: **3.1 Setup/Scaffold -> 3.2 Tests First -> 3.3 Core Refac
 
 - [x] T021 Confirm upload/generation/overlay loading and error feedback copy is clear and actionable in `frontend/src/App.tsx` and `frontend/src/components/PatternGenerator.tsx`.
 - [x] T022 Verify no API contract changes in `frontend/src/types/api.ts` against `backend/src/models/api_models.py`.
-- [ ] T023 Run frontend test suite (`npm test`) and fix regressions.
-- [ ] T024 Run frontend lint/type checks (`npm run lint`, `npm run build` or `npm run type-check` if available).
+- [x] T023 Run frontend test suite (`npm test`) and fix regressions.
+- [x] T024 Run frontend lint/type checks (`npm run lint`, `npm run build` or `npm run type-check` if available).
 - [ ] T025 Perform manual acceptance walkthrough for desktop and mobile viewport scenarios and record outcomes in this file.
+
+### Phase 3.5 Validation Log (2026-04-05)
+
+- **T023 Frontend test suite:** `npm test -- --run` ✅
+  - Result: **12/12 test files passed**, **66/66 tests passed**.
+  - Regression fixes applied to legacy route-oriented tests so they align with the upload-first single-screen flow and updated overlay status copy.
+- **T024 Lint/type/build validation:**
+  - `npm run lint` ✅
+  - `npm run build` (`tsc && vite build`) ✅
 
 ## Dependency Notes
 
