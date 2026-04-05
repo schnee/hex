@@ -135,11 +135,6 @@
   scroll-padding-top: 0.75rem;
 }
 
-.generator-drawer-content .form-actions-top {
-  top: 0;
-  z-index: 6;
-}
-
 .generator-results-panel {
   min-height: clamp(18rem, 34vh, 26rem);
 }
@@ -163,13 +158,10 @@
 }
 
 .form-actions-top {
-  padding: 0.75rem;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.18);
-  position: sticky;
-  top: 0.5rem;
-  z-index: 5;
-  backdrop-filter: blur(6px);
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(11, 16, 35, 0.16);
 }
 
 .form-layout-columns {
@@ -228,6 +220,16 @@
   padding: 0.45rem 0.55rem;
   background: rgba(255, 255, 255, 0.96);
   color: #20233f;
+}
+
+.form-group .computed-value {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-weight: 600;
+  line-height: 1.25;
 }
 
 .submit-button {

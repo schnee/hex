@@ -17,7 +17,6 @@ interface FormData {
   aspect_w: number;
   aspect_h: number;
   aspect_adherence: number;
-  total_tiles: number;
   colors: string;
   color_mode: 'random' | 'gradient' | 'scheme60';
   gradient_axis: 'auto' | 'x' | 'y' | 'principal';
@@ -44,7 +43,6 @@ const DEFAULT_FORM_DATA: FormData = {
   aspect_w: 16,
   aspect_h: 9,
   aspect_adherence: 0.75,
-  total_tiles: 50,
   colors: '#273c6b, #92323d, #D8C03F',
   color_mode: 'random',
   gradient_axis: 'auto',
@@ -55,6 +53,8 @@ const DEFAULT_FORM_DATA: FormData = {
   seed: Math.floor(Math.random() * 1000000),
   num_layouts: 3,
 };
+
+const DEFAULT_TOTAL_TILES = 50;
 
 export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
   onPatternsGenerated,
@@ -78,22 +78,43 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
       .filter(color => color);
   }, [formData.colors]);
 
-  // Update color counts when colors or total tiles change
+  // Update color counts when number of colors changes
   React.useEffect(() => {
     const numColors = parsedColors.length;
-    if (numColors > 0) {
-      const baseCount = Math.floor(formData.total_tiles / numColors);
-      const remainder = formData.total_tiles % numColors;
-      const newCounts = Array(numColors).fill(baseCount);
+    if (numColors === 0) {
+      setColorCounts([]);
+      return;
+    }
 
-      // Distribute remainder
-      for (let i = 0; i < remainder; i++) {
-        newCounts[i]++;
+    setColorCounts(prev => {
+      if (prev.length === numColors) {
+        return prev;
       }
 
-      setColorCounts(newCounts);
-    }
-  }, [parsedColors.length, formData.total_tiles]);
+      if (prev.length === 0) {
+        const baseCount = Math.floor(DEFAULT_TOTAL_TILES / numColors);
+        const remainder = DEFAULT_TOTAL_TILES % numColors;
+        const seededCounts = Array(numColors).fill(baseCount);
+
+        for (let i = 0; i < remainder; i++) {
+          seededCounts[i]++;
+        }
+
+        return seededCounts;
+      }
+
+      if (prev.length > numColors) {
+        return prev.slice(0, numColors);
+      }
+
+      return [...prev, ...Array(numColors - prev.length).fill(0)];
+    });
+  }, [parsedColors.length]);
+
+  const computedTotalTiles = useMemo(
+    () => colorCounts.reduce((acc, count) => acc + count, 0),
+    [colorCounts]
+  );
 
   // Validation functions
   const validateField = useCallback(
@@ -105,12 +126,6 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
         case 'aspect_h':
           if (numericValue < 0.1 || numericValue > 100) {
             return `${field === 'aspect_w' ? 'Aspect width' : 'Aspect height'} must be between 0.1 and 100`;
-          }
-          break;
-
-        case 'total_tiles':
-          if (numericValue < 1 || numericValue > 1000) {
-            return 'Total tiles must be between 1 and 1000';
           }
           break;
 
@@ -150,12 +165,12 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
   const validateColorCounts = useCallback((): string | null => {
     if (colorCounts.length > 0) {
       const sum = colorCounts.reduce((acc, count) => acc + count, 0);
-      if (sum !== formData.total_tiles) {
-        return 'Color counts must sum to total tiles';
+      if (sum < 1 || sum > 1000) {
+        return 'Total tiles must be between 1 and 1000';
       }
     }
     return null;
-  }, [colorCounts, formData.total_tiles]);
+  }, [colorCounts]);
 
   const handleFieldChange = useCallback(
     <K extends keyof FormData>(field: K, value: FormData[K]) => {
@@ -191,6 +206,72 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
       return newCounts;
     });
   }, []);
+
+  const handleRoleChange = useCallback(
+    (
+      field: 'primary_role' | 'secondary_role' | 'accent_role',
+      value: string
+    ) => {
+      handleFieldChange(
+        field,
+        value === '' ? undefined : parseInt(value, 10) || 0
+      );
+    },
+    [handleFieldChange]
+  );
+
+  React.useEffect(() => {
+    setFormData(prev => {
+      const maxIndex = parsedColors.length - 1;
+      const nextPrimary =
+        prev.primary_role !== undefined && prev.primary_role > maxIndex
+          ? undefined
+          : prev.primary_role;
+      const nextSecondary =
+        prev.secondary_role !== undefined && prev.secondary_role > maxIndex
+          ? undefined
+          : prev.secondary_role;
+      const nextAccent =
+        prev.accent_role !== undefined && prev.accent_role > maxIndex
+          ? undefined
+          : prev.accent_role;
+
+      if (
+        nextPrimary === prev.primary_role &&
+        nextSecondary === prev.secondary_role &&
+        nextAccent === prev.accent_role
+      ) {
+        return prev;
+      }
+
+      const {
+        primary_role: _prevPrimary,
+        secondary_role: _prevSecondary,
+        accent_role: _prevAccent,
+        ...rest
+      } = prev;
+
+      return {
+        ...rest,
+        ...(nextPrimary !== undefined ? { primary_role: nextPrimary } : {}),
+        ...(nextSecondary !== undefined
+          ? { secondary_role: nextSecondary }
+          : {}),
+        ...(nextAccent !== undefined ? { accent_role: nextAccent } : {}),
+      };
+    });
+  }, [parsedColors.length]);
+
+  const roleColorOptions = useMemo(() => {
+    return parsedColors.map((color, index) => {
+      const count = colorCounts[index];
+      const countLabel = typeof count === 'number' ? ` (${count} tiles)` : '';
+      return {
+        value: index,
+        label: `Color ${index + 1}: ${color}${countLabel}`,
+      };
+    });
+  }, [parsedColors, colorCounts]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -246,7 +327,8 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
           .map(entry => entry.index);
 
         const defaultDominantRole = roleFallbackOrder[0] ?? 0;
-        const defaultSecondaryRole = roleFallbackOrder[1] ?? defaultDominantRole;
+        const defaultSecondaryRole =
+          roleFallbackOrder[1] ?? defaultDominantRole;
         const defaultAccentRole = roleFallbackOrder[2] ?? defaultDominantRole;
 
         roles = {
@@ -260,9 +342,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
         aspect_w: formData.aspect_w,
         aspect_h: formData.aspect_h,
         aspect_adherence: formData.aspect_adherence,
-        total_tiles: formData.total_tiles,
+        total_tiles: computedTotalTiles,
         colors: parsedColors,
-        counts: colorCounts.length > 0 ? colorCounts : [formData.total_tiles],
+        counts: colorCounts.length > 0 ? colorCounts : [computedTotalTiles],
         color_mode: formData.color_mode,
         tendrils: formData.tendrils,
         tendril_len_min: formData.tendril_len_min,
@@ -428,27 +510,17 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
               <h3>Pattern Configuration</h3>
 
               <div className="form-group">
-                <label htmlFor="total_tiles">Total Tiles:</label>
-                <input
-                  id="total_tiles"
-                  type="number"
-                  value={formData.total_tiles}
-                  onChange={e =>
-                    handleFieldChange(
-                      'total_tiles',
-                      parseInt(e.target.value) || 0
-                    )
-                  }
-                  onBlur={e =>
-                    handleFieldBlur(
-                      'total_tiles',
-                      parseInt(e.target.value) || 0
-                    )
-                  }
-                />
-                {validationErrors.total_tiles && (
-                  <span className="error">{validationErrors.total_tiles}</span>
-                )}
+                <label htmlFor="computed_total_tiles">Total Tiles:</label>
+                <output
+                  className="computed-value"
+                  data-testid="computed-total-tiles"
+                  id="computed_total_tiles"
+                >
+                  {computedTotalTiles}
+                </output>
+                <span className="overlay-guidance">
+                  Calculated from Color Distribution counts.
+                </span>
               </div>
 
               <div className="form-group">
@@ -662,56 +734,86 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
               <>
                 <div className="form-group">
                   <label htmlFor="primary_role">Primary Role:</label>
-                  <input
+                  <select
                     id="primary_role"
-                    type="number"
-                    min="0"
-                    value={formData.primary_role || 0}
-                    onChange={e =>
-                      handleFieldChange(
-                        'primary_role',
-                        parseInt(e.target.value) || 0
-                      )
+                    value={
+                      formData.primary_role !== undefined
+                        ? String(formData.primary_role)
+                        : ''
                     }
-                  />
+                    onChange={e =>
+                      handleRoleChange('primary_role', e.target.value)
+                    }
+                    disabled={roleColorOptions.length === 0}
+                  >
+                    <option value="">Auto (largest count)</option>
+                    {roleColorOptions.map(option => (
+                      <option
+                        key={`primary-${option.value}`}
+                        value={option.value}
+                      >
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="secondary_role">Secondary Role:</label>
-                  <input
+                  <select
                     id="secondary_role"
-                    type="number"
-                    min="0"
-                    value={formData.secondary_role || 0}
-                    onChange={e =>
-                      handleFieldChange(
-                        'secondary_role',
-                        parseInt(e.target.value) || 0
-                      )
+                    value={
+                      formData.secondary_role !== undefined
+                        ? String(formData.secondary_role)
+                        : ''
                     }
-                  />
+                    onChange={e =>
+                      handleRoleChange('secondary_role', e.target.value)
+                    }
+                    disabled={roleColorOptions.length === 0}
+                  >
+                    <option value="">Auto (second largest count)</option>
+                    {roleColorOptions.map(option => (
+                      <option
+                        key={`secondary-${option.value}`}
+                        value={option.value}
+                      >
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="accent_role">Accent Role:</label>
-                  <input
+                  <select
                     id="accent_role"
-                    type="number"
-                    min="0"
-                    value={formData.accent_role || 0}
-                    onChange={e =>
-                      handleFieldChange(
-                        'accent_role',
-                        parseInt(e.target.value) || 0
-                      )
+                    value={
+                      formData.accent_role !== undefined
+                        ? String(formData.accent_role)
+                        : ''
                     }
-                  />
+                    onChange={e =>
+                      handleRoleChange('accent_role', e.target.value)
+                    }
+                    disabled={roleColorOptions.length === 0}
+                  >
+                    <option value="">Auto (third largest count)</option>
+                    {roleColorOptions.map(option => (
+                      <option
+                        key={`accent-${option.value}`}
+                        value={option.value}
+                      >
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </>
             )}
 
             {/* Color Count Management */}
-            {colorCounts.length > 1 && (
+            {colorCounts.length > 0 && (
               <div className="color-counts">
                 <h4>Color Distribution</h4>
                 {colorCounts.map((count, index) => (
