@@ -5,6 +5,44 @@ import App from '../../src/App';
 import { PatternContextProvider } from '../../src/context/PatternContext';
 import type { Pattern, UploadResponse } from '../../src/types/api';
 
+const MOBILE_VIEWPORTS = [
+  { width: 320, height: 568 },
+  { width: 375, height: 812 },
+  { width: 768, height: 1024 },
+];
+
+const setViewport = (width: number, height: number) => {
+  Object.defineProperty(window, 'innerWidth', {
+    configurable: true,
+    writable: true,
+    value: width,
+  });
+  Object.defineProperty(window, 'innerHeight', {
+    configurable: true,
+    writable: true,
+    value: height,
+  });
+  window.dispatchEvent(new Event('resize'));
+};
+
+const setHorizontalBounds = (
+  element: HTMLElement,
+  { clientWidth, scrollWidth }: { clientWidth: number; scrollWidth: number }
+) => {
+  Object.defineProperty(element, 'clientWidth', {
+    configurable: true,
+    get: () => clientWidth,
+  });
+  Object.defineProperty(element, 'scrollWidth', {
+    configurable: true,
+    get: () => scrollWidth,
+  });
+};
+
+const expectNoHorizontalOverflow = (element: HTMLElement) => {
+  expect(element.scrollWidth).toBeLessThanOrEqual(element.clientWidth);
+};
+
 const mockPatterns: Pattern[] = [
   {
     id: 'pattern-1',
@@ -117,6 +155,26 @@ vi.mock('../../src/components/OverlayCanvas', () => ({
 }));
 
 describe('App Pattern Workspace', () => {
+  it('maintains no-horizontal-overflow workspace shell invariants at mobile checkpoints', () => {
+    render(
+      <PatternContextProvider>
+        <App />
+      </PatternContextProvider>
+    );
+
+    const workspaceShell = screen.getByTestId('workspace-shell');
+
+    MOBILE_VIEWPORTS.forEach(({ width, height }) => {
+      setViewport(width, height);
+      setHorizontalBounds(workspaceShell, {
+        clientWidth: width,
+        scrollWidth: width,
+      });
+
+      expectNoHorizontalOverflow(workspaceShell);
+    });
+  });
+
   it('keeps generation gated until upload completes', async () => {
     const user = userEvent.setup();
 
