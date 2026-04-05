@@ -10,7 +10,7 @@ It is written so you can start with a brand new Google Cloud and Cloudflare acco
 ## 0) What You Are Deploying
 
 - Frontend (React/Vite) calls `VITE_API_BASE_URL` from `frontend/src/services/api.ts`
-- Backend (FastAPI) allows browser origins from `CORS_ALLOW_ORIGINS` in `backend/src/main.py`
+- Backend (FastAPI) allows browser origins from `CORS_ALLOW_ORIGINS` and optional `CORS_ALLOW_ORIGIN_REGEX` in `backend/src/main.py`
 - You must deploy backend first so the frontend can point at a real API URL
 
 ---
@@ -71,6 +71,8 @@ Create `backend/cloudrun.env`:
 
 ```dotenv
 CORS_ALLOW_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+# Optional: allow Cloudflare Pages preview deployments for one project
+# CORS_ALLOW_ORIGIN_REGEX=^https://[a-z0-9-]+\.hex-layout-frontend\.pages\.dev$
 ```
 
 Notes:
@@ -78,6 +80,7 @@ Notes:
 - Use one `KEY=VALUE` per line
 - Do not wrap values in quotes
 - Use comma-separated origins for `CORS_ALLOW_ORIGINS`
+- Use `CORS_ALLOW_ORIGIN_REGEX` only for dynamic preview subdomains (for example Cloudflare Pages previews)
 
 ### 2.2 Initial deploy (using env file)
 
@@ -182,12 +185,15 @@ Update `backend/cloudrun.env` with your real frontend origin, for example:
 
 ```dotenv
 CORS_ALLOW_ORIGINS=https://hex-layout-frontend.pages.dev
+# Optional preview deploy support:
+# CORS_ALLOW_ORIGIN_REGEX=^https://[a-z0-9-]+\.hex-layout-frontend\.pages\.dev$
 ```
 
 If you use multiple origins (recommended during rollout), keep them comma-separated:
 
 ```dotenv
 CORS_ALLOW_ORIGINS=https://hex-layout-frontend.pages.dev,https://hex.yourdomain.com,http://localhost:3000
+CORS_ALLOW_ORIGIN_REGEX=^https://[a-z0-9-]+\.hex-layout-frontend\.pages\.dev$
 ```
 
 Then apply the updated env file:
@@ -232,6 +238,7 @@ Add custom domain origin in `backend/cloudrun.env`, for example:
 
 ```dotenv
 CORS_ALLOW_ORIGINS=https://hex.yourdomain.com,https://hex-layout-frontend.pages.dev
+CORS_ALLOW_ORIGIN_REGEX=^https://[a-z0-9-]+\.hex-layout-frontend\.pages\.dev$
 ```
 
 Then apply it to Cloud Run:
@@ -265,7 +272,7 @@ npx wrangler pages deploy dist --project-name hex-layout-frontend
 ### CORS error in browser
 
 - Cause: Pages/custom domain not included in `CORS_ALLOW_ORIGINS`
-- Fix: update `backend/cloudrun.env` and apply via `gcloud run services update --env-vars-file backend/cloudrun.env`
+- Fix: add exact domain to `CORS_ALLOW_ORIGINS`, and if preview deploys fail add `CORS_ALLOW_ORIGIN_REGEX`, then apply via `gcloud run services update --env-vars-file backend/cloudrun.env`
 
 ### Frontend calls localhost in production
 
