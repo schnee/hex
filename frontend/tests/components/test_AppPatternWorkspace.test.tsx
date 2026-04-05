@@ -5,6 +5,44 @@ import App from '../../src/App';
 import { PatternContextProvider } from '../../src/context/PatternContext';
 import type { Pattern, UploadResponse } from '../../src/types/api';
 
+const MOBILE_VIEWPORTS = [
+  { width: 320, height: 568 },
+  { width: 375, height: 812 },
+  { width: 768, height: 1024 },
+];
+
+const setViewport = (width: number, height: number) => {
+  Object.defineProperty(window, 'innerWidth', {
+    configurable: true,
+    writable: true,
+    value: width,
+  });
+  Object.defineProperty(window, 'innerHeight', {
+    configurable: true,
+    writable: true,
+    value: height,
+  });
+  window.dispatchEvent(new Event('resize'));
+};
+
+const setHorizontalBounds = (
+  element: HTMLElement,
+  { clientWidth, scrollWidth }: { clientWidth: number; scrollWidth: number }
+) => {
+  Object.defineProperty(element, 'clientWidth', {
+    configurable: true,
+    get: () => clientWidth,
+  });
+  Object.defineProperty(element, 'scrollWidth', {
+    configurable: true,
+    get: () => scrollWidth,
+  });
+};
+
+const expectNoHorizontalOverflow = (element: HTMLElement) => {
+  expect(element.scrollWidth).toBeLessThanOrEqual(element.clientWidth);
+};
+
 const mockPatterns: Pattern[] = [
   {
     id: 'pattern-1',
@@ -113,10 +151,34 @@ vi.mock('../../src/components/WallImageUploader', () => ({
 }));
 
 vi.mock('../../src/components/OverlayCanvas', () => ({
-  OverlayCanvas: () => <div data-testid="overlay-canvas" />,
+  OverlayCanvas: () => (
+    <div data-testid="overlay-canvas" className="overlay-canvas">
+      <div data-testid="overlay-stage-viewport" className="overlay-stage-viewport" />
+    </div>
+  ),
 }));
 
 describe('App Pattern Workspace', () => {
+  it('maintains no-horizontal-overflow workspace shell invariants at mobile checkpoints', () => {
+    render(
+      <PatternContextProvider>
+        <App />
+      </PatternContextProvider>
+    );
+
+    const workspaceShell = screen.getByTestId('workspace-shell');
+
+    MOBILE_VIEWPORTS.forEach(({ width, height }) => {
+      setViewport(width, height);
+      setHorizontalBounds(workspaceShell, {
+        clientWidth: width,
+        scrollWidth: width,
+      });
+
+      expectNoHorizontalOverflow(workspaceShell);
+    });
+  });
+
   it('keeps generation gated until upload completes', async () => {
     const user = userEvent.setup();
 
@@ -158,6 +220,48 @@ describe('App Pattern Workspace', () => {
     expect(preview).toBeInTheDocument();
     expect(previewImage).toHaveAttribute('src', mockUploadResponse.processed_data);
     expect(screen.queryByTestId('overlay-canvas')).not.toBeInTheDocument();
+  });
+
+  it('keeps upload preview and overlay viewport containers within mobile width bounds', async () => {
+    const user = userEvent.setup();
+
+    setViewport(320, 568);
+
+    render(
+      <PatternContextProvider>
+        <App />
+      </PatternContextProvider>
+    );
+
+    await user.click(screen.getByRole('button', { name: /upload mocked wall image/i }));
+
+    const previewContainer = screen.getByTestId('uploaded-wall-preview');
+    const previewImage = screen.getByRole('img', {
+      name: /uploaded wall image preview/i,
+    });
+
+    setHorizontalBounds(previewContainer, {
+      clientWidth: 288,
+      scrollWidth: 288,
+    });
+    setHorizontalBounds(previewImage as HTMLElement, {
+      clientWidth: 288,
+      scrollWidth: 288,
+    });
+
+    expectNoHorizontalOverflow(previewContainer);
+    expectNoHorizontalOverflow(previewImage as HTMLElement);
+
+    await user.click(screen.getByRole('button', { name: /generate mocked patterns/i }));
+    await user.click(screen.getByTestId('pattern-card-pattern-1'));
+
+    const overlayViewport = screen.getByTestId('overlay-stage-viewport');
+    setHorizontalBounds(overlayViewport, {
+      clientWidth: 288,
+      scrollWidth: 288,
+    });
+
+    expectNoHorizontalOverflow(overlayViewport);
   });
 
   it('enables generation after upload and keeps single selected pattern state', async () => {
@@ -234,6 +338,55 @@ describe('App Pattern Workspace', () => {
     await user.click(screen.getByRole('button', { name: /expand generator drawer/i }));
     expect(drawerContent).not.toHaveAttribute('hidden');
     expect(generatedPatternsSection).toContainElement(firstPatternCard);
+  });
+
+  it('keeps upload, generate, and drawer actions discoverable without horizontal scroll', async () => {
+    const user = userEvent.setup();
+
+    setViewport(320, 568);
+
+    render(
+      <PatternContextProvider>
+        <App />
+      </PatternContextProvider>
+    );
+
+    const workspaceShell = screen.getByTestId('workspace-shell');
+    const uploadAction = screen.getByRole('button', {
+      name: /upload mocked wall image/i,
+    });
+    const generateAction = screen.getByRole('button', {
+      name: /generate mocked patterns/i,
+    });
+    const drawerToggle = screen.getByRole('button', {
+      name: /collapse generator drawer/i,
+    });
+
+    expect(uploadAction).toBeVisible();
+    expect(generateAction).toBeVisible();
+    expect(drawerToggle).toBeVisible();
+
+    setHorizontalBounds(workspaceShell, {
+      clientWidth: 320,
+      scrollWidth: 320,
+    });
+    expectNoHorizontalOverflow(workspaceShell);
+
+    await user.click(uploadAction);
+    expect(generateAction).toBeEnabled();
+
+    await user.click(drawerToggle);
+    expect(drawerToggle).toHaveAttribute('aria-expanded', 'false');
+    expect(drawerToggle).toBeVisible();
+
+    await user.click(drawerToggle);
+    expect(drawerToggle).toHaveAttribute('aria-expanded', 'true');
+
+    setHorizontalBounds(workspaceShell, {
+      clientWidth: 320,
+      scrollWidth: 320,
+    });
+    expectNoHorizontalOverflow(workspaceShell);
   });
 
 });

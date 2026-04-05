@@ -69,9 +69,12 @@ export const WallImageUploader: React.FC<WallImageUploaderProps> = ({
   };
 
   return (
-    <div>
-      <label htmlFor="wall-image-upload">Upload wall image</label>
+    <div className="wall-image-uploader">
+      <label className="wall-image-label" htmlFor="wall-image-upload">
+        Upload wall image
+      </label>
       <input
+        className="wall-image-input"
         id="wall-image-upload"
         type="file"
         accept=".jpg,.jpeg,.png,.gif"

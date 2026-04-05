@@ -71,6 +71,20 @@ const renderApp = () =>
     </PatternContextProvider>
   );
 
+const setViewport = (width: number, height: number) => {
+  Object.defineProperty(window, 'innerWidth', {
+    configurable: true,
+    writable: true,
+    value: width,
+  });
+  Object.defineProperty(window, 'innerHeight', {
+    configurable: true,
+    writable: true,
+    value: height,
+  });
+  window.dispatchEvent(new Event('resize'));
+};
+
 describe('Pattern Generation Integration Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -190,6 +204,32 @@ describe('Pattern Generation Integration Flow', () => {
     await waitFor(() => {
       expect(mockGeneratePatterns).toHaveBeenCalledTimes(2);
       expect(screen.getByTestId('pattern-card-generated-pattern-2')).toBeInTheDocument();
+    });
+  });
+
+  it('covers upload -> generate -> select flow at mobile viewport width', async () => {
+    const user = userEvent.setup();
+    setViewport(375, 812);
+    renderApp();
+
+    await uploadWallImage(user);
+
+    await user.click(screen.getByRole('button', { name: /generate patterns/i }));
+
+    const selectedCard = await screen.findByTestId(
+      'pattern-card-generated-pattern-1'
+    );
+    await user.click(selectedCard);
+
+    await waitFor(() => {
+      expect(selectedCard).toHaveClass('selected');
+      expect(mockCalculateOverlay).toHaveBeenCalledWith(
+        expect.objectContaining({
+          image_id: uploadedImage.image_id,
+          pattern_id: 'generated-pattern-1',
+        })
+      );
+      expect(screen.getByTestId('overlay-canvas')).toBeInTheDocument();
     });
   });
 });

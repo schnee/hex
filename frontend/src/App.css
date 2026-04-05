@@ -1,8 +1,11 @@
 /* App.css */
 .app {
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   font-family:
@@ -31,12 +34,15 @@
 
 .app-main {
   flex: 1;
+  width: 100%;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
   padding: 2rem;
   gap: 1rem;
+  overflow-x: hidden;
 }
 
 .workspace-nav {
@@ -60,6 +66,7 @@
   color: #fff;
   font-weight: 600;
   padding: 0.5rem 1rem;
+  min-height: 44px;
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
@@ -71,10 +78,15 @@
 
 .workspace-layout {
   width: 100%;
+  max-width: 100%;
   display: grid;
   grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr);
   gap: 1rem;
   align-items: start;
+}
+
+.workspace-layout > * {
+  min-width: 0;
 }
 
 .workspace-layout-single-column {
@@ -112,6 +124,7 @@
 .generator-controls-panel,
 .generator-results-panel {
   width: 100%;
+  min-width: 0;
   background: rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   padding: 1rem;
@@ -133,6 +146,10 @@
   padding-right: 0.25rem;
   scrollbar-gutter: stable;
   scroll-padding-top: 0.75rem;
+}
+
+.generator-drawer-content > * {
+  min-width: 0;
 }
 
 .generator-results-panel {
@@ -169,6 +186,18 @@
   grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
   gap: 0.75rem;
   align-items: start;
+}
+
+.form-layout-columns > *,
+.form-sections-grid > *,
+.form-section > * {
+  min-width: 0;
+}
+
+.pattern-display,
+.patterns-grid,
+.pattern-card {
+  min-width: 0;
 }
 
 .form-sections-grid {
@@ -256,6 +285,7 @@
 .overlay-workspace {
   width: 100%;
   max-width: 960px;
+  min-width: 0;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.12);
   border-radius: 12px;
@@ -263,6 +293,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  overflow-x: hidden;
 }
 
 .overlay-guidance {
@@ -271,11 +302,30 @@
   opacity: 0.9;
 }
 
+.wall-image-uploader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wall-image-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.wall-image-input {
+  width: 100%;
+  max-width: 100%;
+}
+
 .uploaded-wall-preview {
+  width: 100%;
+  max-width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
   background: rgba(15, 20, 43, 0.35);
   padding: 0.5rem;
+  overflow: hidden;
 }
 
 .uploaded-wall-preview img {
@@ -298,9 +348,12 @@
 
 .overlay-canvas {
   position: relative;
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .overlay-viewport-controls {
@@ -315,6 +368,7 @@
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
   padding: 0.3rem 0.6rem;
+  min-height: 44px;
   font-size: 0.85rem;
   cursor: pointer;
 }
@@ -328,14 +382,24 @@
 }
 
 .overlay-stage-viewport {
-  display: inline-block;
+  display: block;
+  width: 100%;
+  max-width: 100%;
   overflow: hidden;
   border-radius: 8px;
 }
 
 .overlay-stage {
   position: relative;
-  display: inline-block;
+  display: block;
+  width: 100%;
+}
+
+.overlay-stage img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
 }
 
 .react-resizable {
@@ -476,6 +540,7 @@ code {
   }
 
   .generator-controls-panel {
+    gap: 1rem;
     min-height: auto;
   }
 
@@ -502,6 +567,22 @@ code {
   .form-sections-grid-left,
   .form-sections-grid {
     grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-actions > * {
+    width: 100%;
+  }
+
+  .form-group input,
+  .form-group select,
+  .submit-button,
+  .wall-image-input {
+    min-height: 44px;
   }
 
   .form-actions-top,
