@@ -46,7 +46,7 @@ Phase order is strict: **3.1 Setup/Scaffold -> 3.2 Tests First -> 3.3 Core Refac
 - [x] T017 Ensure generated card section remains vertically stable when drawer expands/collapses in `frontend/src/App.css`.
 - [x] T018 Ensure generate action remains visible on common desktop viewport heights in `frontend/src/App.css`.
 - [x] T019 Tune mobile stacking and spacing for upload -> generate -> select sequence in `frontend/src/App.css`.
-- [ ] T020 Strengthen selected-card visual state styling in `frontend/src/App.css` and/or `frontend/src/components/PatternDisplay.tsx`.
+- [x] T020 Strengthen selected-card visual state styling in `frontend/src/App.css` and/or `frontend/src/components/PatternDisplay.tsx`.
 
 ## Phase 3.5: Feedback and Validation
 

@@ -348,6 +348,23 @@
   color: #ffb3b3;
 }
 
+.pattern-card.selected {
+  outline: 3px solid rgba(10, 63, 160, 0.5);
+  outline-offset: 2px;
+}
+
+.pattern-selection-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #0a3fa0;
+  background: #d9e9ff;
+  border-radius: 999px;
+  padding: 0.25rem 0.55rem;
+}
+
 .welcome-message {
   text-align: center;
   max-width: 600px;
