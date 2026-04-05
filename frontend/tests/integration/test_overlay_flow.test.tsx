@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import App from '../../src/App';
 import { PatternContextProvider } from '../../src/context/PatternContext';
-import { WORKSPACE_ROUTES } from '../../src/routes/workspaceRoutes';
 import { normalizeGeneratedPatternPngData as toPngDataUrl } from '../../src/services/api';
 import type { Pattern, UploadResponse } from '../../src/types/api';
 
@@ -99,6 +98,18 @@ const generatedPattern: Pattern = {
   colors: ['#ff0000', '#00ff00', '#0000ff'],
 };
 
+const generatedPatternTwo: Pattern = {
+  id: 'pattern-ovr-2',
+  seed: 99,
+  width_inches: 11.2,
+  height_inches: 6.1,
+  aspect_ratio: 1.83,
+  aspect_deviation: 1.4,
+  png_data: toPngDataUrl(`${RAW_BASE64_PATTERN}-alt`),
+  hexes: [{ q: 1, r: -1 }],
+  colors: ['#ff66aa', '#66ffaa', '#6677ff'],
+};
+
 const uploadedImage: UploadResponse = {
   image_id: 'img-ovr-1',
   width: 1920,
@@ -113,13 +124,32 @@ const renderApp = () =>
     </PatternContextProvider>
   );
 
+const uploadWallImage = async (user: ReturnType<typeof userEvent.setup>) => {
+  const file = new File(['wall image'], 'wall.jpg', { type: 'image/jpeg' });
+  await user.upload(screen.getByLabelText(/upload wall image/i), file);
+  await waitFor(() => {
+    expect(mockUploadImage).toHaveBeenCalledWith(file);
+  });
+
+  return file;
+};
+
+const generateAndSelectPattern = async (
+  user: ReturnType<typeof userEvent.setup>,
+  patternId = generatedPattern.id
+) => {
+  await user.click(await screen.findByRole('button', { name: /generate patterns/i }));
+  const patternCard = await screen.findByTestId(`pattern-card-${patternId}`);
+  await user.click(patternCard);
+  return patternCard;
+};
+
 describe('Overlay Positioning Integration Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    window.history.pushState({}, '', WORKSPACE_ROUTES.generator);
     mockGeneratePatterns.mockResolvedValue({
       success: true,
-      data: { patterns: [generatedPattern] },
+      data: { patterns: [generatedPattern, generatedPatternTwo] },
     });
     mockUploadImage.mockResolvedValue({
       success: true,
@@ -145,15 +175,8 @@ describe('Overlay Positioning Integration Flow', () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.click(screen.getByRole('button', { name: /generate patterns/i }));
-    await user.click(await screen.findByTestId('pattern-card-pattern-ovr'));
-
-    await user.click(screen.getByRole('link', { name: /overlay/i }));
-    expect(window.location.pathname).toBe(WORKSPACE_ROUTES.overlay);
-    expect(screen.getByLabelText(/upload wall image/i)).toBeInTheDocument();
-
-    const file = new File(['wall image'], 'wall.jpg', { type: 'image/jpeg' });
-    await user.upload(screen.getByLabelText(/upload wall image/i), file);
+    const file = await uploadWallImage(user);
+    await generateAndSelectPattern(user);
 
     await waitFor(() => {
       expect(mockUploadImage).toHaveBeenCalledWith(file);
@@ -183,12 +206,8 @@ describe('Overlay Positioning Integration Flow', () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.click(screen.getByRole('button', { name: /generate patterns/i }));
-    await user.click(await screen.findByTestId('pattern-card-pattern-ovr'));
-    await user.click(screen.getByRole('link', { name: /overlay/i }));
-
-    const file = new File(['wall image'], 'wall.jpg', { type: 'image/jpeg' });
-    await user.upload(screen.getByLabelText(/upload wall image/i), file);
+    await uploadWallImage(user);
+    await generateAndSelectPattern(user);
 
     await screen.findByTestId('overlay-canvas');
 
@@ -248,12 +267,8 @@ describe('Overlay Positioning Integration Flow', () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.click(screen.getByRole('button', { name: /generate patterns/i }));
-    await user.click(await screen.findByTestId('pattern-card-pattern-ovr'));
-    await user.click(screen.getByRole('link', { name: /overlay/i }));
-
-    const file = new File(['wall image'], 'wall.jpg', { type: 'image/jpeg' });
-    await user.upload(screen.getByLabelText(/upload wall image/i), file);
+    await uploadWallImage(user);
+    await generateAndSelectPattern(user);
 
     const canvas = await screen.findByTestId('overlay-canvas');
     const overlayImage = screen.getByTestId('overlay-image');
@@ -275,12 +290,8 @@ describe('Overlay Positioning Integration Flow', () => {
 
     renderApp();
 
-    await user.click(screen.getByRole('button', { name: /generate patterns/i }));
-    await user.click(await screen.findByTestId('pattern-card-pattern-ovr'));
-    await user.click(screen.getByRole('link', { name: /overlay/i }));
-
-    const file = new File(['wall image'], 'wall.jpg', { type: 'image/jpeg' });
-    await user.upload(screen.getByLabelText(/upload wall image/i), file);
+    await uploadWallImage(user);
+    await generateAndSelectPattern(user);
 
     expect(
       await screen.findByText('Overlay dimensions unavailable for this image.')
@@ -302,12 +313,8 @@ describe('Overlay Positioning Integration Flow', () => {
 
     renderApp();
 
-    await user.click(screen.getByRole('button', { name: /generate patterns/i }));
-    await user.click(await screen.findByTestId('pattern-card-pattern-ovr'));
-    await user.click(screen.getByRole('link', { name: /overlay/i }));
-
-    const file = new File(['wall image'], 'wall.jpg', { type: 'image/jpeg' });
-    await user.upload(screen.getByLabelText(/upload wall image/i), file);
+    await uploadWallImage(user);
+    await generateAndSelectPattern(user);
 
     expect(
       await screen.findByText(/refreshing overlay dimensions\.\.\./i)
@@ -381,12 +388,8 @@ describe('Overlay Positioning Integration Flow', () => {
 
     renderApp();
 
-    await user.click(screen.getByRole('button', { name: /generate patterns/i }));
-    await user.click(await screen.findByTestId('pattern-card-pattern-ovr'));
-    await user.click(screen.getByRole('link', { name: /overlay/i }));
-
-    const file = new File(['wall image'], 'wall.jpg', { type: 'image/jpeg' });
-    await user.upload(screen.getByLabelText(/upload wall image/i), file);
+    await uploadWallImage(user);
+    await generateAndSelectPattern(user);
 
     expect(
       await screen.findByText(
@@ -407,6 +410,55 @@ describe('Overlay Positioning Integration Flow', () => {
         )
       ).not.toBeInTheDocument();
       expect(screen.queryByText(/temporary overlay failure/i)).not.toBeInTheDocument();
+    });
+  });
+
+  it('replaces active overlay when selecting a second generated pattern', async () => {
+    const user = userEvent.setup();
+    renderApp();
+
+    await uploadWallImage(user);
+    await user.click(await screen.findByRole('button', { name: /generate patterns/i }));
+
+    const firstCard = await screen.findByTestId(`pattern-card-${generatedPattern.id}`);
+    const secondCard = await screen.findByTestId(
+      `pattern-card-${generatedPatternTwo.id}`
+    );
+
+    await user.click(firstCard);
+
+    await waitFor(() => {
+      expect(firstCard).toHaveClass('selected');
+      expect(secondCard).not.toHaveClass('selected');
+      expect(mockCalculateOverlay).toHaveBeenLastCalledWith({
+        image_id: uploadedImage.image_id,
+        pattern_id: generatedPattern.id,
+        overlay_state: {
+          left: 80,
+          top: 80,
+          scaleX: 1,
+          scaleY: 1,
+          rotation: 0,
+        },
+      });
+    });
+
+    await user.click(secondCard);
+
+    await waitFor(() => {
+      expect(firstCard).not.toHaveClass('selected');
+      expect(secondCard).toHaveClass('selected');
+      expect(mockCalculateOverlay).toHaveBeenLastCalledWith({
+        image_id: uploadedImage.image_id,
+        pattern_id: generatedPatternTwo.id,
+        overlay_state: {
+          left: 80,
+          top: 80,
+          scaleX: 1,
+          scaleY: 1,
+          rotation: 0,
+        },
+      });
     });
   });
 });
