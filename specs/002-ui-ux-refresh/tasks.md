@@ -13,8 +13,8 @@ Phase order is strict: **3.1 Setup/Scaffold -> 3.2 Tests First -> 3.3 Core Refac
 - [x] T004 Add upload-first generation gating state wiring in `frontend/src/App.tsx`.
 - [x] T006 Add collapsible generator drawer shell and toggle behavior in `frontend/src/App.tsx`.
 - [x] T010 Move generated pattern results below image/overlay region and outside drawer in `frontend/src/App.tsx`.
-- [ ] T013 Keep single-active-overlay replacement behavior when selecting a new card.
-- [ ] T017 Rewrite routed integration test to single-screen journey in `frontend/tests/integration/test_routed_workspace_flow.test.tsx`.
+- [x] T013 Keep single-active-overlay replacement behavior when selecting a new card.
+- [x] T017 Rewrite routed integration test to single-screen journey in `frontend/tests/integration/test_routed_workspace_flow.test.tsx`.
 
 ## Phase 3.1: Setup and Scaffolding
 
@@ -36,15 +36,15 @@ Phase order is strict: **3.1 Setup/Scaffold -> 3.2 Tests First -> 3.3 Core Refac
 - [x] T010 Implement upload-first primary CTA and generator gating UI state in `frontend/src/App.tsx`.
 - [x] T011 Implement collapsible generator drawer container in `frontend/src/App.tsx`.
 - [x] T012 Keep `PatternGenerator` mounted in drawer while rendering `PatternDisplay` outside drawer in `frontend/src/App.tsx`.
-- [ ] T013 Ensure `handlePatternSelect` always sets one active overlay and clears prior selection state in `frontend/src/App.tsx`.
-- [ ] T014 Preserve overlay move/resize and dimension-refresh behavior after refactor in `frontend/src/App.tsx`.
-- [ ] T015 Remove generator/overlay guidance copy tied to old two-workspace flow in `frontend/src/App.tsx`.
+- [x] T013 Ensure `handlePatternSelect` always sets one active overlay and clears prior selection state in `frontend/src/App.tsx`.
+- [x] T014 Preserve overlay move/resize and dimension-refresh behavior after refactor in `frontend/src/App.tsx`.
+- [x] T015 Remove generator/overlay guidance copy tied to old two-workspace flow in `frontend/src/App.tsx`.
 
 ## Phase 3.4: UX and Responsive Stabilization
 
-- [ ] T016 Update layout styles for stable drawer toggle behavior in `frontend/src/App.css`.
-- [ ] T017 Ensure generated card section remains vertically stable when drawer expands/collapses in `frontend/src/App.css`.
-- [ ] T018 Ensure generate action remains visible on common desktop viewport heights in `frontend/src/App.css`.
+- [x] T016 Update layout styles for stable drawer toggle behavior in `frontend/src/App.css`.
+- [x] T017 Ensure generated card section remains vertically stable when drawer expands/collapses in `frontend/src/App.css`.
+- [x] T018 Ensure generate action remains visible on common desktop viewport heights in `frontend/src/App.css`.
 - [ ] T019 Tune mobile stacking and spacing for upload -> generate -> select sequence in `frontend/src/App.css`.
 - [ ] T020 Strengthen selected-card visual state styling in `frontend/src/App.css` and/or `frontend/src/components/PatternDisplay.tsx`.
 
