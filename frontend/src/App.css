@@ -400,8 +400,41 @@ code {
 }
 
 @media (max-width: 768px) {
+  .app-main {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
   .app-header h1 {
     font-size: 2rem;
+  }
+
+  .workspace-layout-generator {
+    gap: 0.9rem;
+  }
+
+  .overlay-workspace,
+  .generator-controls-panel,
+  .generator-results-panel {
+    padding: 0.9rem;
+  }
+
+  .generator-controls-panel {
+    min-height: auto;
+  }
+
+  .generator-drawer-toggle-row {
+    justify-content: stretch;
+  }
+
+  .generator-drawer-toggle-row .workspace-link {
+    width: 100%;
+    text-align: center;
+  }
+
+  .upload-primary-cta,
+  .overlay-guidance {
+    margin-bottom: 0.4rem;
   }
 
   .workspace-layout {
@@ -420,6 +453,8 @@ code {
   }
 
   .generator-drawer-content {
+    border-top: 0;
+    padding-top: 0.35rem;
     max-height: none;
     overflow: visible;
     padding-right: 0;
