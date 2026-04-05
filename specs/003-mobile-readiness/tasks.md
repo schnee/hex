@@ -13,7 +13,7 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 - [x] T004 Add viewport-oriented test scaffolding for overflow invariants.
 - [x] T008 Apply upload and overlay container width/overflow fixes.
 - [x] T011 Reflow pattern cards and control layout for narrow screens.
-- [ ] T014 Validate overlay interaction parity on mobile breakpoints.
+- [x] T014 Validate overlay interaction parity on mobile breakpoints.
 - [ ] T017 Run full frontend validation and record outcomes.
 
 ## Phase 4.1: Baseline and Scaffolding
@@ -40,7 +40,7 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 
 ## Phase 4.4: Interaction Validation and Sign-off
 
-- [ ] T014 Verify overlay drag/resize behavior remains functional post-layout changes.
+- [x] T014 Verify overlay drag/resize behavior remains functional post-layout changes.
 - [ ] T015 Run `npm test` and fix regressions.
 - [ ] T016 Run `npm run lint` and `npm run build` (or type-check equivalent).
 - [ ] T017 Perform manual acceptance walkthrough at required breakpoints and log pass/fail results.
@@ -49,6 +49,7 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 ## Validation Log
 
 - 2026-04-05: Completed Phase 4.1 baseline documentation tasks (T001-T003) in `specs/003-mobile-readiness/phase-4.1-baseline.md`.
+- 2026-04-05: T014 overlay interaction parity verified with `npm run test:run -- tests/integration/test_overlay_flow.test.tsx tests/components/test_AppPatternWorkspace.test.tsx` (**pass**, 14 tests).
 
 ## Dependency Notes
 
