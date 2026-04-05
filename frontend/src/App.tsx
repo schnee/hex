@@ -210,12 +210,18 @@ export const App: React.FC = () => {
           className={`workspace-layout workspace-layout-generator${hasGeneratedPatterns ? ' workspace-layout-has-patterns' : ''}`}
           data-testid="workspace-shell"
         >
-          <section className="overlay-workspace" data-testid="image-overlay-section">
+          <section
+            className="overlay-workspace"
+            data-testid="image-overlay-section"
+          >
             <h2>Upload and Overlay</h2>
             <WallImageUploader onUploadComplete={handleUploadComplete} />
 
             {!uploadedImage && (
-              <div className="upload-primary-cta" data-testid="upload-primary-cta">
+              <div
+                className="upload-primary-cta"
+                data-testid="upload-primary-cta"
+              >
                 <p className="overlay-guidance">
                   Start by uploading a wall image. Once upload finishes, pattern
                   generation will unlock below.
@@ -236,8 +242,8 @@ export const App: React.FC = () => {
                 </div>
 
                 <p className="overlay-guidance">
-                  Generate patterns below, then choose one card to place it on your
-                  wall.
+                  Generate patterns below, then choose one card to place it on
+                  your wall.
                 </p>
               </>
             )}
@@ -302,7 +308,9 @@ export const App: React.FC = () => {
                   )}
 
                   {overlayCalcError && (
-                    <p className="overlay-dimensions-error">{overlayCalcError}</p>
+                    <p className="overlay-dimensions-error">
+                      {overlayCalcError}
+                    </p>
                   )}
                 </section>
               </>

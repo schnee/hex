@@ -99,11 +99,13 @@
   order: 3;
 }
 
-.workspace-layout-generator.workspace-layout-has-patterns .generator-results-panel {
+.workspace-layout-generator.workspace-layout-has-patterns
+  .generator-results-panel {
   order: 2;
 }
 
-.workspace-layout-generator.workspace-layout-has-patterns .generator-controls-panel {
+.workspace-layout-generator.workspace-layout-has-patterns
+  .generator-controls-panel {
   order: 3;
 }
 

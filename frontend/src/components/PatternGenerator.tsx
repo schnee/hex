@@ -335,8 +335,8 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
 
       {disabled && (
         <p className="overlay-guidance" data-testid="generator-gated-message">
-          Upload a wall image above, then use Generate Patterns to create
-          layout options.
+          Upload a wall image above, then use Generate Patterns to create layout
+          options.
         </p>
       )}
 
