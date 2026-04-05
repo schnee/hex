@@ -179,6 +179,7 @@ describe('App Pattern Workspace', () => {
 
     const drawer = screen.getByTestId('generator-drawer');
     const drawerContent = screen.getByTestId('generator-drawer-content');
+    const imageOverlaySection = screen.getByTestId('image-overlay-section');
     const generatedPatternsSection = screen.getByTestId('generated-patterns-section');
     const collapseButton = screen.getByRole('button', {
       name: /collapse generator drawer/i,
@@ -187,6 +188,16 @@ describe('App Pattern Workspace', () => {
     expect(drawerContent).not.toHaveAttribute('hidden');
     expect(drawer).toContainElement(drawerContent);
     expect(generatedPatternsSection).not.toContainElement(drawerContent);
+    expect(
+      imageOverlaySection.compareDocumentPosition(generatedPatternsSection)
+    ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+
+    await user.click(screen.getByRole('button', { name: /upload mocked wall image/i }));
+    await user.click(screen.getByRole('button', { name: /generate mocked patterns/i }));
+
+    const firstPatternCard = screen.getByTestId('pattern-card-pattern-1');
+    expect(generatedPatternsSection).toContainElement(firstPatternCard);
+    expect(drawer).not.toContainElement(firstPatternCard);
 
     await user.click(collapseButton);
     expect(drawerContent).toHaveAttribute('hidden');
@@ -196,6 +207,7 @@ describe('App Pattern Workspace', () => {
 
     await user.click(screen.getByRole('button', { name: /expand generator drawer/i }));
     expect(drawerContent).not.toHaveAttribute('hidden');
+    expect(generatedPatternsSection).toContainElement(firstPatternCard);
   });
 
 });
