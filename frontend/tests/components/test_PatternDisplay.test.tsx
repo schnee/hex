@@ -35,6 +35,20 @@ const mockPatterns: Pattern[] = [
   },
 ];
 
+const setViewport = (width: number, height: number) => {
+  Object.defineProperty(window, 'innerWidth', {
+    configurable: true,
+    writable: true,
+    value: width,
+  });
+  Object.defineProperty(window, 'innerHeight', {
+    configurable: true,
+    writable: true,
+    value: height,
+  });
+  window.dispatchEvent(new Event('resize'));
+};
+
 describe('PatternDisplay Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -133,5 +147,33 @@ describe('PatternDisplay Component', () => {
       'aria-label',
       expect.stringContaining('seed 123')
     );
+  });
+
+  it('covers narrow-width reflow mode by preserving auto grid behavior', () => {
+    setViewport(320, 568);
+
+    const { rerender } = render(
+      <PatternDisplay patterns={mockPatterns} onPatternSelect={() => {}} />
+    );
+
+    const autoGrid = screen.getByTestId('patterns-grid');
+    expect(autoGrid).not.toHaveClass('patterns-grid-three-up');
+    expect(autoGrid).toHaveStyle({
+      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+    });
+
+    rerender(
+      <PatternDisplay
+        patterns={mockPatterns}
+        onPatternSelect={() => {}}
+        layout="three-up"
+      />
+    );
+
+    const threeUpGrid = screen.getByTestId('patterns-grid');
+    expect(threeUpGrid).toHaveClass('patterns-grid-three-up');
+    expect(threeUpGrid).toHaveStyle({
+      gridTemplateColumns: 'repeat(3, minmax(220px, 1fr))',
+    });
   });
 });
