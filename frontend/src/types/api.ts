@@ -26,7 +26,11 @@ export interface GenerateRequest {
   color_mode: 'random' | 'gradient' | 'scheme60';
   gradient_axis?: 'auto' | 'x' | 'y' | 'principal';
   gradient_order?: number[];
-  roles?: Record<string, number>;
+  roles?: {
+    dominant: number;
+    secondary: number;
+    accent: number;
+  };
   tendrils?: number;
   tendril_len_min?: number;
   tendril_len_max?: number;

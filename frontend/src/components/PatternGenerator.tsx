@@ -233,15 +233,26 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
 
     try {
       // Build roles object for scheme60 mode
-      let roles: Record<string, number> | undefined;
-      if (
-        formData.color_mode === 'scheme60' &&
-        formData.primary_role !== undefined
-      ) {
+      let roles: GenerateRequest['roles'];
+      const hasScheme60RoleOverride =
+        formData.primary_role !== undefined ||
+        formData.secondary_role !== undefined ||
+        formData.accent_role !== undefined;
+
+      if (formData.color_mode === 'scheme60' && hasScheme60RoleOverride) {
+        const roleFallbackOrder = colorCounts
+          .map((count, index) => ({ count, index }))
+          .sort((left, right) => right.count - left.count)
+          .map(entry => entry.index);
+
+        const defaultDominantRole = roleFallbackOrder[0] ?? 0;
+        const defaultSecondaryRole = roleFallbackOrder[1] ?? defaultDominantRole;
+        const defaultAccentRole = roleFallbackOrder[2] ?? defaultDominantRole;
+
         roles = {
-          primary: formData.primary_role,
-          secondary: formData.secondary_role || 0,
-          accent: formData.accent_role || 0,
+          dominant: formData.primary_role ?? defaultDominantRole,
+          secondary: formData.secondary_role ?? defaultSecondaryRole,
+          accent: formData.accent_role ?? defaultAccentRole,
         };
       }
 
