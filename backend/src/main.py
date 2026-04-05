@@ -5,11 +5,15 @@ Provides REST API endpoints for pattern generation and overlay visualization
 """
 
 import os
+import re
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from src.api import images, overlay, patterns
+
+
+DEFAULT_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
 
 def _get_allowed_origins() -> list[str]:
@@ -20,7 +24,23 @@ def _get_allowed_origins() -> list[str]:
             origin.strip() for origin in configured_origins.split(",") if origin.strip()
         ]
 
-    return ["http://localhost:3000", "http://127.0.0.1:3000"]
+    return DEFAULT_ALLOWED_ORIGINS
+
+
+def _get_allowed_origin_regex() -> str | None:
+    configured_regex = os.getenv("CORS_ALLOW_ORIGIN_REGEX", "").strip()
+
+    if not configured_regex:
+        return None
+
+    try:
+        re.compile(configured_regex)
+    except re.error as exc:
+        raise ValueError(
+            f"Invalid CORS_ALLOW_ORIGIN_REGEX value. Could not compile regex: {exc}"
+        ) from exc
+
+    return configured_regex
 
 
 app = FastAPI(
@@ -33,6 +53,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_get_allowed_origins(),
+    allow_origin_regex=_get_allowed_origin_regex(),
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
