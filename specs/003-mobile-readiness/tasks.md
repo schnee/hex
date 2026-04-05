@@ -42,7 +42,7 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 
 - [x] T014 Verify overlay drag/resize behavior remains functional post-layout changes.
 - [x] T015 Run `npm test` and fix regressions.
-- [ ] T016 Run `npm run lint` and `npm run build` (or type-check equivalent).
+- [x] T016 Run `npm run lint` and `npm run build` (or type-check equivalent).
 - [ ] T017 Perform manual acceptance walkthrough at required breakpoints and log pass/fail results.
 - [ ] T018 Confirm no API contract changes required (`frontend/src/types/api.ts` vs `backend/src/models/api_models.py`).
 
@@ -51,6 +51,7 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 - 2026-04-05: Completed Phase 4.1 baseline documentation tasks (T001-T003) in `specs/003-mobile-readiness/phase-4.1-baseline.md`.
 - 2026-04-05: T014 overlay interaction parity verified with `npm run test:run -- tests/integration/test_overlay_flow.test.tsx tests/components/test_AppPatternWorkspace.test.tsx` (**pass**, 14 tests).
 - 2026-04-05: T015 full frontend test run completed via `npm test -- --run` (**pass**, 12 files / 75 tests).
+- 2026-04-05: T016 quality gates passed with `npm run lint && npm run build` (TypeScript compile + Vite production bundle).
 
 ## Dependency Notes
 
