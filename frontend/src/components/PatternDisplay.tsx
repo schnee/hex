@@ -262,6 +262,7 @@ export const PatternDisplay: React.FC<PatternDisplayProps> = ({
               className={`pattern-card ${isSelected ? 'selected' : ''} ${isHighContrast ? 'high-contrast' : ''} ${isFocusVisible ? 'focus-visible' : ''}`}
               data-testid={`pattern-card-${pattern.id}`}
               role="gridcell"
+              aria-selected={isSelected}
               tabIndex={0}
               aria-label={getPatternAriaLabel(pattern)}
               onClick={() => onPatternSelect(pattern)}
@@ -270,13 +271,17 @@ export const PatternDisplay: React.FC<PatternDisplayProps> = ({
               onMouseLeave={() => setHoveredPattern(null)}
               onFocus={() => setFocusedIndex(index)}
               style={{
-                border: isSelected ? '2px solid #0066cc' : '1px solid #ddd',
+                border: isSelected ? '2px solid #0a3fa0' : '1px solid #cfd7e6',
                 borderRadius: '8px',
                 padding: '1rem',
-                backgroundColor: isSelected ? '#f0f8ff' : '#fff',
+                backgroundColor: isSelected ? '#e8f2ff' : '#fff',
                 cursor: 'pointer',
                 position: 'relative',
                 transition: 'all 0.2s ease',
+                boxShadow: isSelected
+                  ? '0 0 0 3px rgba(10, 63, 160, 0.32), 0 8px 20px rgba(8, 16, 42, 0.2)'
+                  : '0 1px 2px rgba(8, 16, 42, 0.08)',
+                transform: isSelected ? 'translateY(-1px)' : 'translateY(0)',
                 ...(isHighContrast && {
                   border: isSelected ? '3px solid #000' : '2px solid #666',
                   backgroundColor: isSelected ? '#fff' : '#f9f9f9',
@@ -384,6 +389,12 @@ export const PatternDisplay: React.FC<PatternDisplayProps> = ({
                 >
                   {hexCount} {hexCount === 1 ? 'hex' : 'hexes'}
                 </div>
+
+                {isSelected && (
+                  <div className="pattern-selection-indicator">
+                    Selected for overlay
+                  </div>
+                )}
               </div>
 
               {/* Download Button (shown on hover) */}

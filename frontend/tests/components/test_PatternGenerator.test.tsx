@@ -127,7 +127,9 @@ describe('PatternGenerator Component', () => {
       expect(onPatternsGenerated).toHaveBeenCalledWith(mockPatterns);
     });
     expect(
-      await screen.findByText(/patterns generated\. select a variant to continue\./i)
+      await screen.findByText(
+        /patterns generated\. pick a card below to overlay on your wall\./i
+      )
     ).toBeInTheDocument();
   });
 
@@ -145,10 +147,14 @@ describe('PatternGenerator Component', () => {
     await user.click(screen.getByRole('button', { name: /generate patterns/i }));
 
     expect(
-      await screen.findByText(/generation failed\. review inputs and try again\./i)
+      await screen.findByText(
+        /generation failed\. check highlighted inputs and try again\./i
+      )
     ).toBeInTheDocument();
     expect(
-      await screen.findByText(/failed to generate patterns: backend validation failed/i)
+      await screen.findByText(
+        /generation request failed: backend validation failed/i
+      )
     ).toBeInTheDocument();
     expect(onPatternsGenerated).not.toHaveBeenCalled();
 
@@ -157,14 +163,16 @@ describe('PatternGenerator Component', () => {
     await user.click(screen.getByRole('button', { name: /generate patterns/i }));
 
     expect(
-      await screen.findByText(/generation failed\. review inputs and try again\./i)
+      await screen.findByText(
+        /generation failed\. check highlighted inputs and try again\./i
+      )
     ).toBeInTheDocument();
     expect(
-      await screen.findByText(/failed to generate patterns: network down/i)
+      await screen.findByText(/generation request failed: network down/i)
     ).toBeInTheDocument();
     await waitFor(() => {
       expect(
-        screen.queryByText(/failed to generate patterns: backend validation failed/i)
+        screen.queryByText(/generation request failed: backend validation failed/i)
       ).not.toBeInTheDocument();
     });
     expect(onPatternsGenerated).not.toHaveBeenCalled();

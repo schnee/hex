@@ -10,6 +10,7 @@ import type { GenerateRequest, Pattern } from '../types/api';
 
 interface PatternGeneratorProps {
   onPatternsGenerated: (patterns: Pattern[]) => void;
+  disabled?: boolean;
 }
 
 interface FormData {
@@ -57,6 +58,7 @@ const DEFAULT_FORM_DATA: FormData = {
 
 export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
   onPatternsGenerated,
+  disabled = false,
 }) => {
   const [formData, setFormData] = useState<FormData>(DEFAULT_FORM_DATA);
   const [colorCounts, setColorCounts] = useState<number[]>([]);
@@ -193,6 +195,10 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (disabled) {
+      return;
+    }
+
     // Run all validations
     const errors: ValidationErrors = {};
 
@@ -287,26 +293,30 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
     <div className="form-actions form-actions-top">
       {operationStatus !== 'idle' && (
         <div className={`operation-status operation-status-${operationStatus}`}>
-          {operationStatus === 'loading' && 'Generating patterns...'}
+          {operationStatus === 'loading' && 'Generating pattern variants...'}
           {operationStatus === 'success' &&
-            'Patterns generated. Select a variant to continue.'}
+            'Patterns generated. Pick a card below to overlay on your wall.'}
           {operationStatus === 'error' &&
-            'Generation failed. Review inputs and try again.'}
+            'Generation failed. Check highlighted inputs and try again.'}
         </div>
       )}
 
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isLoading || disabled}
         className={`submit-button ${isLoading ? 'loading' : ''}`}
       >
-        {isLoading ? 'Generating patterns...' : 'Generate Patterns'}
+        {isLoading
+          ? 'Generating patterns...'
+          : disabled
+            ? 'Upload Wall Image to Enable'
+            : 'Generate Patterns'}
       </button>
 
       {submitError && (
         <div className="submit-error">
           {operationStatus === 'error'
-            ? `Failed to generate patterns: ${submitError}`
+            ? `Generation request failed: ${submitError}`
             : submitError}
         </div>
       )}
@@ -322,6 +332,13 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
   return (
     <div className="pattern-generator">
       <h2>Pattern Generator</h2>
+
+      {disabled && (
+        <p className="overlay-guidance" data-testid="generator-gated-message">
+          Upload a wall image above, then use Generate Patterns to create layout
+          options.
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} className="pattern-form">
         {formActions}

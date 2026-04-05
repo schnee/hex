@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import App from '../../src/App';
 import { PatternContextProvider } from '../../src/context/PatternContext';
-import { WORKSPACE_ROUTES } from '../../src/routes/workspaceRoutes';
 
 interface ChildrenOnlyProps {
   children: ReactNode;
@@ -30,10 +29,9 @@ const renderApp = () =>
 describe('Generated image contract routed flow', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
-    window.history.pushState({}, '', WORKSPACE_ROUTES.generator);
   });
 
-  it('normalizes backend raw png_data and preserves selected pattern across overlay route', async () => {
+  it('normalizes backend raw png_data and preserves selected pattern in the single-screen flow', async () => {
     const user = userEvent.setup();
     const overlayRequests: Array<{ pattern_id?: string }> = [];
 
@@ -96,6 +94,9 @@ describe('Generated image contract routed flow', () => {
 
     renderApp();
 
+    const file = new File(['wall image'], 'wall.jpg', { type: 'image/jpeg' });
+    await user.upload(screen.getByLabelText(/upload wall image/i), file);
+
     await user.click(screen.getByRole('button', { name: /generate patterns/i }));
     const patternCard = await screen.findByTestId('pattern-card-pattern-raw-1');
     const previewImage = screen.getByRole('img', {
@@ -110,10 +111,6 @@ describe('Generated image contract routed flow', () => {
     });
 
     await user.click(patternCard);
-    await user.click(screen.getByRole('link', { name: /overlay/i }));
-
-    const file = new File(['wall image'], 'wall.jpg', { type: 'image/jpeg' });
-    await user.upload(screen.getByLabelText(/upload wall image/i), file);
 
     const overlayImage = await screen.findByTestId('overlay-image');
     expect(overlayImage).toHaveAttribute(

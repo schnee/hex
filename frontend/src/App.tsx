@@ -1,18 +1,10 @@
 import React from 'react';
-import {
-  BrowserRouter,
-  Navigate,
-  NavLink,
-  Route,
-  Routes,
-} from 'react-router-dom';
 import './App.css';
 import { OverlayCanvas } from './components/OverlayCanvas';
 import { PatternDisplay } from './components/PatternDisplay';
 import { PatternGenerator } from './components/PatternGenerator';
 import { WallImageUploader } from './components/WallImageUploader';
 import { usePatternContext } from './context/PatternContext';
-import { WORKSPACE_ROUTES } from './routes/workspaceRoutes';
 import { apiClient } from './services/api';
 import type {
   OverlayResponse,
@@ -84,7 +76,11 @@ export const App: React.FC = () => {
   const [overlayCalcStatus, setOverlayCalcStatus] = React.useState<
     'idle' | 'loading' | 'success' | 'error'
   >('idle');
+  const [isGeneratorDrawerOpen, setIsGeneratorDrawerOpen] =
+    React.useState(true);
   const latestOverlayRequestId = React.useRef(0);
+  const generatorDrawerContentId = 'generator-drawer-content-panel';
+  const hasGeneratedPatterns = (patterns?.length ?? 0) > 0;
 
   const requestOverlayDimensions = React.useCallback(
     async (
@@ -163,9 +159,27 @@ export const App: React.FC = () => {
   };
 
   const handlePatternSelect = (pattern: Pattern) => {
+    const nextOverlayState = uploadedImage
+      ? getBoundedInitialOverlayState(uploadedImage)
+      : INITIAL_OVERLAY_STATE;
+
     setSelectedPattern(pattern);
     setSelectedPatternId(pattern.id);
+    setOverlayState(nextOverlayState);
+    setViewportScale(INITIAL_VIEWPORT_STATE.scale);
+    setViewportOffsetX(INITIAL_VIEWPORT_STATE.offsetX);
+    setViewportOffsetY(INITIAL_VIEWPORT_STATE.offsetY);
     setIsOverlaySelected(true);
+    setOverlayDimensions(null);
+    setOverlayCalcError(null);
+    setOverlayCalcStatus('idle');
+
+    if (uploadedImage) {
+      void requestOverlayDimensions(nextOverlayState, {
+        image: uploadedImage,
+        pattern,
+      });
+    }
   };
 
   const handleUploadComplete = (image: UploadResponse) => {
@@ -185,156 +199,173 @@ export const App: React.FC = () => {
     });
   };
 
-  const generatorWorkspace = (
-    <div className="workspace-layout workspace-layout-generator">
-      <section className="generator-controls-panel">
-        <PatternGenerator onPatternsGenerated={handlePatternsGenerated} />
-      </section>
-      <section className="generator-results-panel">
-        <h2>Generated Patterns</h2>
-        <PatternDisplay
-          patterns={patterns ?? []}
-          onPatternSelect={handlePatternSelect}
-          layout="three-up"
-          {...(selectedPatternId ? { selectedPatternId } : {})}
-        />
-      </section>
-    </div>
-  );
-
-  const overlayWorkspace = (
-    <div className="workspace-layout workspace-layout-single-column">
-      <section className="overlay-workspace">
-        <h2>Overlay Workspace</h2>
-        <WallImageUploader onUploadComplete={handleUploadComplete} />
-
-        {!selectedPattern && (
-          <p className="overlay-guidance">
-            Select a generated pattern in the Generator route to enable overlay
-            manipulation.
-          </p>
-        )}
-
-        {!uploadedImage && (
-          <p className="overlay-guidance">
-            Upload a wall image to start direct overlay interactions.
-          </p>
-        )}
-
-        {selectedPattern && uploadedImage && (
-          <>
-            <OverlayCanvas
-              wallImageSrc={uploadedImage.processed_data}
-              patternImageSrc={selectedPattern.png_data}
-              overlayState={overlayState}
-              viewportScale={viewportScale}
-              viewportOffsetX={viewportOffsetX}
-              viewportOffsetY={viewportOffsetY}
-              isSelected={isOverlaySelected}
-              onOverlayStateChange={handleOverlayStateChange}
-              onOverlayStatePreview={handleOverlayStatePreview}
-              onViewportScaleChange={setViewportScale}
-              onViewportOffsetChange={(x, y) => {
-                setViewportOffsetX(x);
-                setViewportOffsetY(y);
-              }}
-              onSelectionChange={setIsOverlaySelected}
-            />
-
-            <section className="overlay-dimensions" aria-live="polite">
-              <div className="overlay-dimensions-grid">
-                <div>
-                  <h3>Physical Layout Dimensions</h3>
-                  <p>
-                    {overlayDimensions
-                      ? `${overlayDimensions.physical_dimensions.width_inches.toFixed(1)} in × ${overlayDimensions.physical_dimensions.height_inches.toFixed(1)} in`
-                      : '—'}
-                  </p>
-                </div>
-
-                <div>
-                  <h3>Visual Overlay Size</h3>
-                  <p>
-                    {overlayDimensions
-                      ? `${Math.round(overlayDimensions.visual_dimensions.width_px)} px × ${Math.round(overlayDimensions.visual_dimensions.height_px)} px`
-                      : '—'}
-                  </p>
-                </div>
-              </div>
-
-              {isCalculatingOverlay && <p>Refreshing overlay dimensions...</p>}
-
-              {overlayCalcStatus === 'success' && !isCalculatingOverlay && (
-                <p>Overlay dimensions updated.</p>
-              )}
-
-              {overlayCalcStatus === 'error' && !isCalculatingOverlay && (
-                <p>
-                  Overlay update failed. Adjust placement or re-upload image and
-                  retry.
-                </p>
-              )}
-
-              {overlayCalcError && (
-                <p className="overlay-dimensions-error">{overlayCalcError}</p>
-              )}
-            </section>
-          </>
-        )}
-      </section>
-    </div>
-  );
-
   return (
-    <BrowserRouter
-      future={{
-        v7_startTransition: true,
-        v7_relativeSplatPath: true,
-      }}
-    >
-      <div className="app">
-        <header className="app-header">
-          <h1>Hex Layout Toolkit</h1>
-          <p>Pattern + Overlay Workspace</p>
-        </header>
-        <main className="app-main">
-          <nav className="workspace-nav" aria-label="Workspace sections">
-            <NavLink
-              className={({ isActive }) =>
-                `workspace-link ${isActive ? 'workspace-link-active' : ''}`
-              }
-              to={WORKSPACE_ROUTES.generator}
-            >
-              Generator
-            </NavLink>
-            <NavLink
-              className={({ isActive }) =>
-                `workspace-link ${isActive ? 'workspace-link-active' : ''}`
-              }
-              to={WORKSPACE_ROUTES.overlay}
-            >
-              Overlay
-            </NavLink>
-          </nav>
+    <div className="app">
+      <header className="app-header">
+        <h1>Hex Layout Toolkit</h1>
+        <p>Upload + Generate + Overlay Workspace</p>
+      </header>
+      <main className="app-main">
+        <div
+          className={`workspace-layout workspace-layout-generator${hasGeneratedPatterns ? ' workspace-layout-has-patterns' : ''}`}
+          data-testid="workspace-shell"
+        >
+          <section
+            className="overlay-workspace"
+            data-testid="image-overlay-section"
+          >
+            <h2>Upload and Overlay</h2>
+            <WallImageUploader onUploadComplete={handleUploadComplete} />
 
-          <Routes>
-            <Route
-              path={WORKSPACE_ROUTES.base}
-              element={<Navigate to={WORKSPACE_ROUTES.generator} replace />}
-            />
-            <Route
-              path={WORKSPACE_ROUTES.generator}
-              element={generatorWorkspace}
-            />
-            <Route path={WORKSPACE_ROUTES.overlay} element={overlayWorkspace} />
-            <Route
-              path="*"
-              element={<Navigate to={WORKSPACE_ROUTES.generator} replace />}
-            />
-          </Routes>
-        </main>
-      </div>
-    </BrowserRouter>
+            {!uploadedImage && (
+              <div
+                className="upload-primary-cta"
+                data-testid="upload-primary-cta"
+              >
+                <p className="overlay-guidance">
+                  Start by uploading a wall image. Once upload finishes, pattern
+                  generation will unlock below.
+                </p>
+              </div>
+            )}
+
+            {uploadedImage && !selectedPattern && (
+              <>
+                <div
+                  className="uploaded-wall-preview"
+                  data-testid="uploaded-wall-preview"
+                >
+                  <img
+                    src={uploadedImage.processed_data}
+                    alt="Uploaded wall image preview"
+                  />
+                </div>
+
+                <p className="overlay-guidance">
+                  Generate patterns below, then choose one card to place it on
+                  your wall.
+                </p>
+              </>
+            )}
+
+            {selectedPattern && uploadedImage && (
+              <>
+                <OverlayCanvas
+                  wallImageSrc={uploadedImage.processed_data}
+                  patternImageSrc={selectedPattern.png_data}
+                  overlayState={overlayState}
+                  viewportScale={viewportScale}
+                  viewportOffsetX={viewportOffsetX}
+                  viewportOffsetY={viewportOffsetY}
+                  isSelected={isOverlaySelected}
+                  onOverlayStateChange={handleOverlayStateChange}
+                  onOverlayStatePreview={handleOverlayStatePreview}
+                  onViewportScaleChange={setViewportScale}
+                  onViewportOffsetChange={(x, y) => {
+                    setViewportOffsetX(x);
+                    setViewportOffsetY(y);
+                  }}
+                  onSelectionChange={setIsOverlaySelected}
+                />
+
+                <section className="overlay-dimensions" aria-live="polite">
+                  <div className="overlay-dimensions-grid">
+                    <div>
+                      <h3>Physical Layout Dimensions</h3>
+                      <p>
+                        {overlayDimensions
+                          ? `${overlayDimensions.physical_dimensions.width_inches.toFixed(1)} in × ${overlayDimensions.physical_dimensions.height_inches.toFixed(1)} in`
+                          : '—'}
+                      </p>
+                    </div>
+
+                    <div>
+                      <h3>Visual Overlay Size</h3>
+                      <p>
+                        {overlayDimensions
+                          ? `${Math.round(overlayDimensions.visual_dimensions.width_px)} px × ${Math.round(overlayDimensions.visual_dimensions.height_px)} px`
+                          : '—'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {isCalculatingOverlay && (
+                    <p>
+                      Refreshing overlay dimensions after your latest placement
+                      change...
+                    </p>
+                  )}
+
+                  {overlayCalcStatus === 'success' && !isCalculatingOverlay && (
+                    <p>Overlay dimensions are up to date.</p>
+                  )}
+
+                  {overlayCalcStatus === 'error' && !isCalculatingOverlay && (
+                    <p>
+                      Could not refresh dimensions. Move or resize again, or
+                      re-upload the wall image and retry.
+                    </p>
+                  )}
+
+                  {overlayCalcError && (
+                    <p className="overlay-dimensions-error">
+                      {overlayCalcError}
+                    </p>
+                  )}
+                </section>
+              </>
+            )}
+          </section>
+
+          <section
+            className="generator-controls-panel"
+            data-testid="generator-drawer"
+            aria-label="Generator controls drawer"
+          >
+            <div className="generator-drawer-toggle-row">
+              <button
+                className="workspace-link"
+                type="button"
+                aria-expanded={isGeneratorDrawerOpen}
+                aria-controls={generatorDrawerContentId}
+                onClick={() => setIsGeneratorDrawerOpen(open => !open)}
+              >
+                {isGeneratorDrawerOpen
+                  ? 'Collapse generator drawer'
+                  : 'Expand generator drawer'}
+              </button>
+            </div>
+
+            <div
+              className="generator-drawer-content"
+              id={generatorDrawerContentId}
+              data-testid="generator-drawer-content"
+              hidden={!isGeneratorDrawerOpen}
+            >
+              <PatternGenerator
+                onPatternsGenerated={handlePatternsGenerated}
+                disabled={!uploadedImage}
+              />
+            </div>
+          </section>
+
+          {hasGeneratedPatterns && (
+            <section
+              className="generator-results-panel"
+              data-testid="generated-patterns-section"
+            >
+              <h2>Generated Patterns</h2>
+              <PatternDisplay
+                patterns={patterns ?? []}
+                onPatternSelect={handlePatternSelect}
+                layout="three-up"
+                {...(selectedPatternId ? { selectedPatternId } : {})}
+              />
+            </section>
+          )}
+        </div>
+      </main>
+    </div>
   );
 };
 
