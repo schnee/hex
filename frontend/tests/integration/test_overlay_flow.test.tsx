@@ -460,5 +460,21 @@ describe('Overlay Positioning Integration Flow', () => {
         },
       });
     });
+
+    await user.click(screen.getByRole('button', { name: /mock drag overlay/i }));
+
+    await waitFor(() => {
+      expect(mockCalculateOverlay).toHaveBeenLastCalledWith({
+        image_id: uploadedImage.image_id,
+        pattern_id: generatedPatternTwo.id,
+        overlay_state: {
+          left: 160,
+          top: 120,
+          scaleX: 1,
+          scaleY: 1,
+          rotation: 0,
+        },
+      });
+    });
   });
 });
