@@ -158,12 +158,23 @@ export const App: React.FC = () => {
   };
 
   const handlePatternSelect = (pattern: Pattern) => {
+    const nextOverlayState = uploadedImage
+      ? getBoundedInitialOverlayState(uploadedImage)
+      : INITIAL_OVERLAY_STATE;
+
     setSelectedPattern(pattern);
     setSelectedPatternId(pattern.id);
+    setOverlayState(nextOverlayState);
+    setViewportScale(INITIAL_VIEWPORT_STATE.scale);
+    setViewportOffsetX(INITIAL_VIEWPORT_STATE.offsetX);
+    setViewportOffsetY(INITIAL_VIEWPORT_STATE.offsetY);
     setIsOverlaySelected(true);
+    setOverlayDimensions(null);
+    setOverlayCalcError(null);
+    setOverlayCalcStatus('idle');
 
     if (uploadedImage) {
-      void requestOverlayDimensions(overlayState, {
+      void requestOverlayDimensions(nextOverlayState, {
         image: uploadedImage,
         pattern,
       });
