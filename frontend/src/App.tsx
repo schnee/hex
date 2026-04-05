@@ -79,6 +79,7 @@ export const App: React.FC = () => {
   const [isGeneratorDrawerOpen, setIsGeneratorDrawerOpen] =
     React.useState(true);
   const latestOverlayRequestId = React.useRef(0);
+  const generatorDrawerContentId = 'generator-drawer-content-panel';
 
   const requestOverlayDimensions = React.useCallback(
     async (
@@ -205,9 +206,11 @@ export const App: React.FC = () => {
             )}
 
             {!uploadedImage && (
-              <p className="overlay-guidance">
-                Upload a wall image to unlock pattern generation.
-              </p>
+              <div className="upload-primary-cta" data-testid="upload-primary-cta">
+                <p className="overlay-guidance">
+                  Start here: upload a wall image to unlock pattern generation.
+                </p>
+              </div>
             )}
 
             {selectedPattern && uploadedImage && (
@@ -272,12 +275,17 @@ export const App: React.FC = () => {
             )}
           </section>
 
-          <section className="generator-controls-panel" data-testid="generator-drawer">
+          <section
+            className="generator-controls-panel"
+            data-testid="generator-drawer"
+            aria-label="Generator controls drawer"
+          >
             <div className="generator-drawer-toggle-row">
               <button
                 className="workspace-link"
                 type="button"
                 aria-expanded={isGeneratorDrawerOpen}
+                aria-controls={generatorDrawerContentId}
                 onClick={() => setIsGeneratorDrawerOpen(open => !open)}
               >
                 {isGeneratorDrawerOpen
@@ -288,6 +296,7 @@ export const App: React.FC = () => {
 
             <div
               className="generator-drawer-content"
+              id={generatorDrawerContentId}
               data-testid="generator-drawer-content"
               hidden={!isGeneratorDrawerOpen}
             >
