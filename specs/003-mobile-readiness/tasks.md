@@ -33,7 +33,7 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 
 - [x] T008 Implement app-level overflow guards and width constraints in `frontend/src/App.css`.
 - [x] T009 Implement upload preview and overlay wrapper sizing constraints in `frontend/src/App.css` and/or component styles.
-- [ ] T010 Ensure nested layout containers do not force overflow (`min-width` and flex/grid constraint updates).
+- [x] T010 Ensure nested layout containers do not force overflow (`min-width` and flex/grid constraint updates).
 - [ ] T011 Reflow pattern cards for touch-friendly stacking on mobile widths.
 - [ ] T012 Tune generator panel layout and control spacing for `<= 768px`.
 - [ ] T013 Verify primary actions remain discoverable without horizontal scrolling.
