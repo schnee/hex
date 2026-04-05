@@ -66,6 +66,7 @@
   color: #fff;
   font-weight: 600;
   padding: 0.5rem 1rem;
+  min-height: 44px;
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
@@ -301,6 +302,22 @@
   opacity: 0.9;
 }
 
+.wall-image-uploader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wall-image-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.wall-image-input {
+  width: 100%;
+  max-width: 100%;
+}
+
 .uploaded-wall-preview {
   width: 100%;
   max-width: 100%;
@@ -351,6 +368,7 @@
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
   padding: 0.3rem 0.6rem;
+  min-height: 44px;
   font-size: 0.85rem;
   cursor: pointer;
 }
@@ -522,6 +540,7 @@ code {
   }
 
   .generator-controls-panel {
+    gap: 1rem;
     min-height: auto;
   }
 
@@ -548,6 +567,22 @@ code {
   .form-sections-grid-left,
   .form-sections-grid {
     grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-actions > * {
+    width: 100%;
+  }
+
+  .form-group input,
+  .form-group select,
+  .submit-button,
+  .wall-image-input {
+    min-height: 44px;
   }
 
   .form-actions-top,
