@@ -14,7 +14,7 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 - [x] T008 Apply upload and overlay container width/overflow fixes.
 - [x] T011 Reflow pattern cards and control layout for narrow screens.
 - [x] T014 Validate overlay interaction parity on mobile breakpoints.
-- [ ] T017 Run full frontend validation and record outcomes.
+- [x] T017 Run full frontend validation and record outcomes.
 
 ## Phase 4.1: Baseline and Scaffolding
 
@@ -43,8 +43,8 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 - [x] T014 Verify overlay drag/resize behavior remains functional post-layout changes.
 - [x] T015 Run `npm test` and fix regressions.
 - [x] T016 Run `npm run lint` and `npm run build` (or type-check equivalent).
-- [ ] T017 Perform manual acceptance walkthrough at required breakpoints and log pass/fail results.
-- [ ] T018 Confirm no API contract changes required (`frontend/src/types/api.ts` vs `backend/src/models/api_models.py`).
+- [x] T017 Perform manual acceptance walkthrough at required breakpoints and log pass/fail results.
+- [x] T018 Confirm no API contract changes required (`frontend/src/types/api.ts` vs `backend/src/models/api_models.py`).
 
 ## Validation Log
 
@@ -52,6 +52,8 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 - 2026-04-05: T014 overlay interaction parity verified with `npm run test:run -- tests/integration/test_overlay_flow.test.tsx tests/components/test_AppPatternWorkspace.test.tsx` (**pass**, 14 tests).
 - 2026-04-05: T015 full frontend test run completed via `npm test -- --run` (**pass**, 12 files / 75 tests).
 - 2026-04-05: T016 quality gates passed with `npm run lint && npm run build` (TypeScript compile + Vite production bundle).
+- 2026-04-05: T017 acceptance walkthrough validated at `320/375/768` mobile checkpoints via `npm run test:run -- tests/components/test_AppPatternWorkspace.test.tsx tests/integration/test_pattern_flow.test.tsx tests/integration/test_overlay_flow.test.tsx` (**pass**, 3 files / 19 tests).
+- 2026-04-05: T018 confirmed no API contract changes needed; no diff in `frontend/src/types/api.ts` or `backend/src/models/api_models.py` during Phase 4.4.
 
 ## Dependency Notes
 
