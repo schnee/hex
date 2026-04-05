@@ -340,4 +340,53 @@ describe('App Pattern Workspace', () => {
     expect(generatedPatternsSection).toContainElement(firstPatternCard);
   });
 
+  it('keeps upload, generate, and drawer actions discoverable without horizontal scroll', async () => {
+    const user = userEvent.setup();
+
+    setViewport(320, 568);
+
+    render(
+      <PatternContextProvider>
+        <App />
+      </PatternContextProvider>
+    );
+
+    const workspaceShell = screen.getByTestId('workspace-shell');
+    const uploadAction = screen.getByRole('button', {
+      name: /upload mocked wall image/i,
+    });
+    const generateAction = screen.getByRole('button', {
+      name: /generate mocked patterns/i,
+    });
+    const drawerToggle = screen.getByRole('button', {
+      name: /collapse generator drawer/i,
+    });
+
+    expect(uploadAction).toBeVisible();
+    expect(generateAction).toBeVisible();
+    expect(drawerToggle).toBeVisible();
+
+    setHorizontalBounds(workspaceShell, {
+      clientWidth: 320,
+      scrollWidth: 320,
+    });
+    expectNoHorizontalOverflow(workspaceShell);
+
+    await user.click(uploadAction);
+    expect(generateAction).toBeEnabled();
+
+    await user.click(drawerToggle);
+    expect(drawerToggle).toHaveAttribute('aria-expanded', 'false');
+    expect(drawerToggle).toBeVisible();
+
+    await user.click(drawerToggle);
+    expect(drawerToggle).toHaveAttribute('aria-expanded', 'true');
+
+    setHorizontalBounds(workspaceShell, {
+      clientWidth: 320,
+      scrollWidth: 320,
+    });
+    expectNoHorizontalOverflow(workspaceShell);
+  });
+
 });
