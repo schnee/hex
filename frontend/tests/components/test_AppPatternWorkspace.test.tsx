@@ -168,4 +168,34 @@ describe('App Pattern Workspace', () => {
     expect(patternTwoCard).toHaveClass('selected');
   });
 
+  it('supports collapsing and expanding generator drawer while keeping patterns outside drawer', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <PatternContextProvider>
+        <App />
+      </PatternContextProvider>
+    );
+
+    const drawer = screen.getByTestId('generator-drawer');
+    const drawerContent = screen.getByTestId('generator-drawer-content');
+    const generatedPatternsSection = screen.getByTestId('generated-patterns-section');
+    const collapseButton = screen.getByRole('button', {
+      name: /collapse generator drawer/i,
+    });
+
+    expect(drawerContent).not.toHaveAttribute('hidden');
+    expect(drawer).toContainElement(drawerContent);
+    expect(generatedPatternsSection).not.toContainElement(drawerContent);
+
+    await user.click(collapseButton);
+    expect(drawerContent).toHaveAttribute('hidden');
+    expect(
+      screen.getByRole('button', { name: /expand generator drawer/i })
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /expand generator drawer/i }));
+    expect(drawerContent).not.toHaveAttribute('hidden');
+  });
+
 });
