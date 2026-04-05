@@ -12,7 +12,7 @@ Phase order is strict: **3.1 Setup/Scaffold -> 3.2 Tests First -> 3.3 Core Refac
 - [x] T001 Remove workspace route split and render one-screen container in `frontend/src/App.tsx`.
 - [x] T004 Add upload-first generation gating state wiring in `frontend/src/App.tsx`.
 - [x] T006 Add collapsible generator drawer shell and toggle behavior in `frontend/src/App.tsx`.
-- [ ] T010 Move generated pattern results below image/overlay region and outside drawer in `frontend/src/App.tsx`.
+- [x] T010 Move generated pattern results below image/overlay region and outside drawer in `frontend/src/App.tsx`.
 - [ ] T013 Keep single-active-overlay replacement behavior when selecting a new card.
 - [ ] T017 Rewrite routed integration test to single-screen journey in `frontend/tests/integration/test_routed_workspace_flow.test.tsx`.
 
@@ -27,15 +27,15 @@ Phase order is strict: **3.1 Setup/Scaffold -> 3.2 Tests First -> 3.3 Core Refac
 - [x] T004 Update app workspace behavior tests for upload-first gating in `frontend/tests/components/test_AppPatternWorkspace.test.tsx`.
 - [x] T005 Add assertion coverage for generation disabled before upload and enabled after upload in `frontend/tests/components/test_AppPatternWorkspace.test.tsx`.
 - [x] T006 Add drawer collapse/expand behavior assertions and layout invariants in `frontend/tests/components/test_AppPatternWorkspace.test.tsx`.
-- [ ] T007 Update pattern card placement assertions to ensure cards remain outside drawer and below image area in `frontend/tests/components/test_AppPatternWorkspace.test.tsx`.
-- [ ] T008 Rewrite routed flow test into single-screen flow test in `frontend/tests/integration/test_routed_workspace_flow.test.tsx`.
-- [ ] T009 Add integration test for selecting second pattern replacing active overlay in `frontend/tests/integration/test_overlay_flow.test.tsx`.
+- [x] T007 Update pattern card placement assertions to ensure cards remain outside drawer and below image area in `frontend/tests/components/test_AppPatternWorkspace.test.tsx`.
+- [x] T008 Rewrite routed flow test into single-screen flow test in `frontend/tests/integration/test_routed_workspace_flow.test.tsx`.
+- [x] T009 Add integration test for selecting second pattern replacing active overlay in `frontend/tests/integration/test_overlay_flow.test.tsx`.
 
 ## Phase 3.3: Core Refactor
 
-- [ ] T010 Implement upload-first primary CTA and generator gating UI state in `frontend/src/App.tsx`.
-- [ ] T011 Implement collapsible generator drawer container in `frontend/src/App.tsx`.
-- [ ] T012 Keep `PatternGenerator` mounted in drawer while rendering `PatternDisplay` outside drawer in `frontend/src/App.tsx`.
+- [x] T010 Implement upload-first primary CTA and generator gating UI state in `frontend/src/App.tsx`.
+- [x] T011 Implement collapsible generator drawer container in `frontend/src/App.tsx`.
+- [x] T012 Keep `PatternGenerator` mounted in drawer while rendering `PatternDisplay` outside drawer in `frontend/src/App.tsx`.
 - [ ] T013 Ensure `handlePatternSelect` always sets one active overlay and clears prior selection state in `frontend/src/App.tsx`.
 - [ ] T014 Preserve overlay move/resize and dimension-refresh behavior after refactor in `frontend/src/App.tsx`.
 - [ ] T015 Remove generator/overlay guidance copy tied to old two-workspace flow in `frontend/src/App.tsx`.
