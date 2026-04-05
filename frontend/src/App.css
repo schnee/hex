@@ -110,6 +110,12 @@
   overflow-x: hidden;
   padding-right: 0.25rem;
   scrollbar-gutter: stable;
+  scroll-padding-top: 0.75rem;
+}
+
+.generator-drawer-content .form-actions-top {
+  top: 0;
+  z-index: 6;
 }
 
 .generator-results-panel {
