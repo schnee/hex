@@ -10,7 +10,7 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 ## Immediate Execution Checklist (Start Here)
 
 - [x] T001 Capture and list reproducible mobile overflow issues in app shell/upload/overlay areas.
-- [ ] T004 Add viewport-oriented test scaffolding for overflow invariants.
+- [x] T004 Add viewport-oriented test scaffolding for overflow invariants.
 - [ ] T008 Apply upload and overlay container width/overflow fixes.
 - [ ] T011 Reflow pattern cards and control layout for narrow screens.
 - [ ] T014 Validate overlay interaction parity on mobile breakpoints.
@@ -24,10 +24,10 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 
 ## Phase 4.2: Tests First (Mobile Overflow Invariants)
 
-- [ ] T004 Add/extend component tests for no horizontal overflow shell assumptions in `frontend/tests/components/test_AppPatternWorkspace.test.tsx`.
-- [ ] T005 Add assertions for upload preview/canvas container bounds in relevant component tests.
-- [ ] T006 Add integration coverage for upload -> generate -> select flow under mobile viewport mocks.
-- [ ] T007 Ensure tests cover pattern-card reflow behavior at narrow widths.
+- [x] T004 Add/extend component tests for no horizontal overflow shell assumptions in `frontend/tests/components/test_AppPatternWorkspace.test.tsx`.
+- [x] T005 Add assertions for upload preview/canvas container bounds in relevant component tests.
+- [x] T006 Add integration coverage for upload -> generate -> select flow under mobile viewport mocks.
+- [x] T007 Ensure tests cover pattern-card reflow behavior at narrow widths.
 
 ## Phase 4.3: Overflow Fixes and Responsive Reflow
 
