@@ -137,4 +137,35 @@ describe('App Pattern Workspace', () => {
     expect(generateButton).toBeEnabled();
   });
 
+  it('enables generation after upload and keeps single selected pattern state', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <PatternContextProvider>
+        <App />
+      </PatternContextProvider>
+    );
+
+    expect(screen.getByText('No patterns available')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /upload mocked wall image/i }));
+    await user.click(screen.getByRole('button', { name: /generate mocked patterns/i }));
+
+    const patternOneCard = screen.getByTestId('pattern-card-pattern-1');
+    const patternTwoCard = screen.getByTestId('pattern-card-pattern-2');
+
+    expect(patternOneCard).toBeInTheDocument();
+    expect(patternTwoCard).toBeInTheDocument();
+    expect(patternOneCard).not.toHaveClass('selected');
+    expect(patternTwoCard).not.toHaveClass('selected');
+
+    await user.click(patternOneCard);
+    expect(patternOneCard).toHaveClass('selected');
+    expect(patternTwoCard).not.toHaveClass('selected');
+
+    await user.click(patternTwoCard);
+    expect(patternOneCard).not.toHaveClass('selected');
+    expect(patternTwoCard).toHaveClass('selected');
+  });
+
 });
