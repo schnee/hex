@@ -20,7 +20,7 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 
 - [x] T001 Document current mobile overflow defects with impacted selectors/components.
 - [x] T002 Identify affected files (`frontend/src/App.tsx`, `frontend/src/App.css`, overlay/image components).
-- [ ] T003 Define viewport checkpoints for validation (`320x568`, `375x812`, `768x1024`).
+- [x] T003 Define viewport checkpoints for validation (`320x568`, `375x812`, `768x1024`).
 
 ## Phase 4.2: Tests First (Mobile Overflow Invariants)
 
@@ -48,7 +48,7 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 
 ## Validation Log
 
-- _Pending execution._
+- 2026-04-05: Completed Phase 4.1 baseline documentation tasks (T001-T003) in `specs/003-mobile-readiness/phase-4.1-baseline.md`.
 
 ## Dependency Notes
 

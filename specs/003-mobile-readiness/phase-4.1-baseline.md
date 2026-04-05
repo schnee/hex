@@ -49,3 +49,19 @@ Primary files to update in Phase 4.2/4.3 based on current overflow vectors:
    - Upload control wrapper that participates in narrow-width layout behavior at the top of the flow.
 5. `frontend/src/components/PatternDisplay.tsx`
    - Pattern card grid inline column configuration that currently defaults to a 3-up desktop footprint.
+
+## T003: Viewport Validation Checkpoints
+
+Use these checkpoints for automated and manual verification in later tasks:
+
+| Checkpoint | Resolution | Orientation | Purpose |
+| --- | --- | --- | --- |
+| VP-320 | `320x568` | Phone narrow portrait | Stress test for shell, upload controls, overlay bounds, and no horizontal scrolling. |
+| VP-375 | `375x812` | Phone standard portrait | Primary acceptance path for upload -> generate -> select -> overlay adjust. |
+| VP-768 | `768x1024` | Small tablet portrait | Validate tablet responsive reflow and ensure no regression in control readability. |
+
+Verification gates for each checkpoint:
+
+- No page-level horizontal scroll during upload -> generate -> select flow.
+- Uploaded image preview and overlay canvas stay width-bounded with aspect preserved.
+- Pattern cards remain readable and selectable without overlap/clipping.
