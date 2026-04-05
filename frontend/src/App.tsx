@@ -210,18 +210,18 @@ export const App: React.FC = () => {
             <h2>Upload and Overlay</h2>
             <WallImageUploader onUploadComplete={handleUploadComplete} />
 
-            {!selectedPattern && (
-              <p className="overlay-guidance">
-                Generate and select a pattern below to enable overlay manipulation.
-              </p>
-            )}
-
             {!uploadedImage && (
               <div className="upload-primary-cta" data-testid="upload-primary-cta">
                 <p className="overlay-guidance">
-                  Start here: upload a wall image to unlock pattern generation.
+                  Start by uploading a wall image to activate this workspace.
                 </p>
               </div>
+            )}
+
+            {uploadedImage && !selectedPattern && (
+              <p className="overlay-guidance">
+                Generate patterns, then select one to begin overlay placement.
+              </p>
             )}
 
             {selectedPattern && uploadedImage && (
