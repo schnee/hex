@@ -244,12 +244,10 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
         return prev;
       }
 
-      const {
-        primary_role: _prevPrimary,
-        secondary_role: _prevSecondary,
-        accent_role: _prevAccent,
-        ...rest
-      } = prev;
+      const rest = { ...prev };
+      delete rest.primary_role;
+      delete rest.secondary_role;
+      delete rest.accent_role;
 
       return {
         ...rest,
