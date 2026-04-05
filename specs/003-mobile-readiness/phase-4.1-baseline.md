@@ -34,3 +34,18 @@
 - **Why it overflows:** component sets a desktop-oriented 3-column inline style by default; mobile behavior relies on downstream media-query correction.
 - **Expected:** mobile-safe column definition should be guaranteed for narrow viewports.
 - **Actual:** layout correctness depends on override order, creating fragile overflow behavior.
+
+## T002: Affected File Inventory
+
+Primary files to update in Phase 4.2/4.3 based on current overflow vectors:
+
+1. `frontend/src/App.tsx`
+   - Workspace shell structure (`workspace-shell`, overlay section, generator/results panels) that determines overflow containment hierarchy.
+2. `frontend/src/App.css`
+   - App shell spacing, grid/flex constraints, overlay wrapper styles, and responsive breakpoint overrides.
+3. `frontend/src/components/OverlayCanvas.tsx`
+   - Overlay stage/viewport markup where wall image and transform surface width constraints need to be enforced.
+4. `frontend/src/components/WallImageUploader.tsx`
+   - Upload control wrapper that participates in narrow-width layout behavior at the top of the flow.
+5. `frontend/src/components/PatternDisplay.tsx`
+   - Pattern card grid inline column configuration that currently defaults to a 3-up desktop footprint.
