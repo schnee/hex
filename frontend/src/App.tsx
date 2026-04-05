@@ -273,7 +273,7 @@ export const App: React.FC = () => {
           </section>
 
           <section className="generator-controls-panel" data-testid="generator-drawer">
-            <div className="workspace-nav">
+            <div className="generator-drawer-toggle-row">
               <button
                 className="workspace-link"
                 type="button"
