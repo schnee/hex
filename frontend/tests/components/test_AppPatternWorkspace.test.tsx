@@ -151,7 +151,11 @@ vi.mock('../../src/components/WallImageUploader', () => ({
 }));
 
 vi.mock('../../src/components/OverlayCanvas', () => ({
-  OverlayCanvas: () => <div data-testid="overlay-canvas" />,
+  OverlayCanvas: () => (
+    <div data-testid="overlay-canvas" className="overlay-canvas">
+      <div data-testid="overlay-stage-viewport" className="overlay-stage-viewport" />
+    </div>
+  ),
 }));
 
 describe('App Pattern Workspace', () => {
@@ -216,6 +220,48 @@ describe('App Pattern Workspace', () => {
     expect(preview).toBeInTheDocument();
     expect(previewImage).toHaveAttribute('src', mockUploadResponse.processed_data);
     expect(screen.queryByTestId('overlay-canvas')).not.toBeInTheDocument();
+  });
+
+  it('keeps upload preview and overlay viewport containers within mobile width bounds', async () => {
+    const user = userEvent.setup();
+
+    setViewport(320, 568);
+
+    render(
+      <PatternContextProvider>
+        <App />
+      </PatternContextProvider>
+    );
+
+    await user.click(screen.getByRole('button', { name: /upload mocked wall image/i }));
+
+    const previewContainer = screen.getByTestId('uploaded-wall-preview');
+    const previewImage = screen.getByRole('img', {
+      name: /uploaded wall image preview/i,
+    });
+
+    setHorizontalBounds(previewContainer, {
+      clientWidth: 288,
+      scrollWidth: 288,
+    });
+    setHorizontalBounds(previewImage as HTMLElement, {
+      clientWidth: 288,
+      scrollWidth: 288,
+    });
+
+    expectNoHorizontalOverflow(previewContainer);
+    expectNoHorizontalOverflow(previewImage as HTMLElement);
+
+    await user.click(screen.getByRole('button', { name: /generate mocked patterns/i }));
+    await user.click(screen.getByTestId('pattern-card-pattern-1'));
+
+    const overlayViewport = screen.getByTestId('overlay-stage-viewport');
+    setHorizontalBounds(overlayViewport, {
+      clientWidth: 288,
+      scrollWidth: 288,
+    });
+
+    expectNoHorizontalOverflow(overlayViewport);
   });
 
   it('enables generation after upload and keeps single selected pattern state', async () => {
