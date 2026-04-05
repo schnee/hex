@@ -126,4 +126,27 @@ describe('Single-Screen Workspace Integration Flow', () => {
       expect(screen.getByTestId('overlay-canvas')).toBeInTheDocument();
     });
   });
+
+  it('renders uploaded wall image immediately after upload without overlay canvas', async () => {
+    const user = userEvent.setup();
+    renderApp();
+
+    const file = new File(['wall image'], 'wall.jpg', { type: 'image/jpeg' });
+    await user.upload(screen.getByLabelText(/upload wall image/i), file);
+
+    await waitFor(() => {
+      expect(mockUploadImage).toHaveBeenCalledWith(file);
+    });
+
+    const preview = screen.getByTestId('uploaded-wall-preview');
+    const previewImage = screen.getByRole('img', {
+      name: /uploaded wall image preview/i,
+    });
+
+    expect(preview).toBeInTheDocument();
+    expect(previewImage).toHaveAttribute('src', uploadedImage.processed_data);
+    expect(screen.queryByTestId('overlay-canvas')).not.toBeInTheDocument();
+    expect(screen.getByText(/generate patterns below/i)).toBeInTheDocument();
+    expect(mockCalculateOverlay).not.toHaveBeenCalled();
+  });
 });

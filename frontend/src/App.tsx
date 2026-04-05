@@ -80,6 +80,7 @@ export const App: React.FC = () => {
     React.useState(true);
   const latestOverlayRequestId = React.useRef(0);
   const generatorDrawerContentId = 'generator-drawer-content-panel';
+  const hasGeneratedPatterns = (patterns?.length ?? 0) > 0;
 
   const requestOverlayDimensions = React.useCallback(
     async (
@@ -205,7 +206,10 @@ export const App: React.FC = () => {
         <p>Upload + Generate + Overlay Workspace</p>
       </header>
       <main className="app-main">
-        <div className="workspace-layout workspace-layout-generator" data-testid="workspace-shell">
+        <div
+          className={`workspace-layout workspace-layout-generator${hasGeneratedPatterns ? ' workspace-layout-has-patterns' : ''}`}
+          data-testid="workspace-shell"
+        >
           <section className="overlay-workspace" data-testid="image-overlay-section">
             <h2>Upload and Overlay</h2>
             <WallImageUploader onUploadComplete={handleUploadComplete} />
@@ -220,10 +224,22 @@ export const App: React.FC = () => {
             )}
 
             {uploadedImage && !selectedPattern && (
-              <p className="overlay-guidance">
-                Generate patterns below, then choose one card to place it on your
-                wall.
-              </p>
+              <>
+                <div
+                  className="uploaded-wall-preview"
+                  data-testid="uploaded-wall-preview"
+                >
+                  <img
+                    src={uploadedImage.processed_data}
+                    alt="Uploaded wall image preview"
+                  />
+                </div>
+
+                <p className="overlay-guidance">
+                  Generate patterns below, then choose one card to place it on your
+                  wall.
+                </p>
+              </>
             )}
 
             {selectedPattern && uploadedImage && (
@@ -325,15 +341,20 @@ export const App: React.FC = () => {
             </div>
           </section>
 
-          <section className="generator-results-panel" data-testid="generated-patterns-section">
-            <h2>Generated Patterns</h2>
-            <PatternDisplay
-              patterns={patterns ?? []}
-              onPatternSelect={handlePatternSelect}
-              layout="three-up"
-              {...(selectedPatternId ? { selectedPatternId } : {})}
-            />
-          </section>
+          {hasGeneratedPatterns && (
+            <section
+              className="generator-results-panel"
+              data-testid="generated-patterns-section"
+            >
+              <h2>Generated Patterns</h2>
+              <PatternDisplay
+                patterns={patterns ?? []}
+                onPatternSelect={handlePatternSelect}
+                layout="three-up"
+                {...(selectedPatternId ? { selectedPatternId } : {})}
+              />
+            </section>
+          )}
         </div>
       </main>
     </div>
