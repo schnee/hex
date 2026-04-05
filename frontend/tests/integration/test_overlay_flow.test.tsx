@@ -317,7 +317,9 @@ describe('Overlay Positioning Integration Flow', () => {
     await generateAndSelectPattern(user);
 
     expect(
-      await screen.findByText(/refreshing overlay dimensions\.\.\./i)
+      await screen.findByText(
+        /refreshing overlay dimensions after your latest placement change\.\.\./i
+      )
     ).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /mock drag overlay/i }));
@@ -342,7 +344,7 @@ describe('Overlay Positioning Integration Flow', () => {
     }
 
     expect(
-      await screen.findByText(/overlay dimensions updated\./i)
+      await screen.findByText(/overlay dimensions are up to date\./i)
     ).toBeInTheDocument();
     expect(screen.getByText('12.4 in × 7.1 in')).toBeInTheDocument();
 
@@ -357,9 +359,9 @@ describe('Overlay Positioning Integration Flow', () => {
     await waitFor(() => {
       expect(screen.queryByText(/stale overlay failure/i)).not.toBeInTheDocument();
       expect(
-        screen.queryByText(
-          /overlay update failed\. adjust placement or re-upload image and retry\./i
-        )
+          screen.queryByText(
+            /could not refresh dimensions\. move or resize again, or re-upload the wall image and retry\./i
+          )
       ).not.toBeInTheDocument();
     });
   });
@@ -393,7 +395,7 @@ describe('Overlay Positioning Integration Flow', () => {
 
     expect(
       await screen.findByText(
-        /overlay update failed\. adjust placement or re-upload image and retry\./i
+        /could not refresh dimensions\. move or resize again, or re-upload the wall image and retry\./i
       )
     ).toBeInTheDocument();
     expect(await screen.findByText(/temporary overlay failure/i)).toBeInTheDocument();
@@ -401,12 +403,12 @@ describe('Overlay Positioning Integration Flow', () => {
     await user.click(screen.getByRole('button', { name: /mock drag overlay/i }));
 
     expect(
-      await screen.findByText(/overlay dimensions updated\./i)
+      await screen.findByText(/overlay dimensions are up to date\./i)
     ).toBeInTheDocument();
     await waitFor(() => {
       expect(
         screen.queryByText(
-          /overlay update failed\. adjust placement or re-upload image and retry\./i
+          /could not refresh dimensions\. move or resize again, or re-upload the wall image and retry\./i
         )
       ).not.toBeInTheDocument();
       expect(screen.queryByText(/temporary overlay failure/i)).not.toBeInTheDocument();

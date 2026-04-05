@@ -19,13 +19,20 @@ describe('App Component', () => {
 
   it('shows workspace subtitle', () => {
     renderApp();
-    expect(screen.getByText('Pattern + Overlay Workspace')).toBeInTheDocument();
+    expect(
+      screen.getByText('Upload + Generate + Overlay Workspace')
+    ).toBeInTheDocument();
   });
 
-  it('renders generator and overlay navigation links', () => {
+  it('renders single-screen workspace sections without route links', () => {
     renderApp();
-    expect(screen.getByRole('link', { name: 'Generator' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Overlay' })).toBeInTheDocument();
+    expect(screen.getByTestId('workspace-shell')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: /generator/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: /overlay/i })
+    ).not.toBeInTheDocument();
   });
 
   it('defaults to the generator workspace route', () => {

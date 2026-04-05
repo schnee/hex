@@ -3,26 +3,41 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../../src/App';
 import { PatternContextProvider } from '../../src/context/PatternContext';
-import { WORKSPACE_ROUTES } from '../../src/routes/workspaceRoutes';
 import { normalizeGeneratedPatternPngData as toPngDataUrl } from '../../src/services/api';
-import type { Pattern } from '../../src/types/api';
+import type { Pattern, UploadResponse } from '../../src/types/api';
 
 const RAW_BASE64_PATTERN_1 = 'bW9jay0x';
 const RAW_BASE64_PATTERN_2 = 'bW9jay0y';
 
-const { mockGeneratePatterns, mockDownloadPattern } = vi.hoisted(() => ({
+const {
+  mockGeneratePatterns,
+  mockDownloadPattern,
+  mockUploadImage,
+  mockCalculateOverlay,
+} = vi.hoisted(() => ({
   mockGeneratePatterns: vi.fn(),
   mockDownloadPattern: vi.fn(),
+  mockUploadImage: vi.fn(),
+  mockCalculateOverlay: vi.fn(),
 }));
 
 vi.mock('../../src/services/api', () => ({
   apiClient: {
     generatePatterns: mockGeneratePatterns,
+    uploadImage: mockUploadImage,
+    calculateOverlay: mockCalculateOverlay,
   },
   downloadPattern: mockDownloadPattern,
   normalizeGeneratedPatternPngData: (value: string) =>
     value.startsWith('data:image/') ? value : `data:image/png;base64,${value}`,
 }));
+
+const uploadedImage: UploadResponse = {
+  image_id: 'img-pattern-flow-1',
+  width: 1920,
+  height: 1080,
+  processed_data: 'data:image/jpeg;base64,mock-wall',
+};
 
 const generatedPatterns: Pattern[] = [
   {
@@ -59,21 +74,46 @@ const renderApp = () =>
 describe('Pattern Generation Integration Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    window.history.pushState({}, '', WORKSPACE_ROUTES.generator);
     mockGeneratePatterns.mockResolvedValue({
       success: true,
       data: { patterns: generatedPatterns },
+    });
+    mockUploadImage.mockResolvedValue({
+      success: true,
+      data: uploadedImage,
+    });
+    mockCalculateOverlay.mockResolvedValue({
+      success: true,
+      data: {
+        physical_dimensions: {
+          width_inches: 10,
+          height_inches: 6,
+        },
+        visual_dimensions: {
+          width_px: 240,
+          height_px: 140,
+        },
+      },
     });
     mockDownloadPattern.mockResolvedValue(new Blob(['png'], { type: 'image/png' }));
     global.URL.createObjectURL = vi.fn(() => 'blob:mock');
     global.URL.revokeObjectURL = vi.fn();
   });
 
+  const uploadWallImage = async (user: ReturnType<typeof userEvent.setup>) => {
+    const file = new File(['wall image'], 'wall.jpg', { type: 'image/jpeg' });
+    await user.upload(screen.getByLabelText(/upload wall image/i), file);
+
+    await waitFor(() => {
+      expect(mockUploadImage).toHaveBeenCalledWith(file);
+    });
+  };
+
   it('renders generated variants after one generate action', async () => {
     const user = userEvent.setup();
     renderApp();
 
-    expect(window.location.pathname).toBe(WORKSPACE_ROUTES.generator);
+    await uploadWallImage(user);
 
     await user.click(screen.getByRole('button', { name: /generate patterns/i }));
 
@@ -97,6 +137,8 @@ describe('Pattern Generation Integration Flow', () => {
     const user = userEvent.setup();
     renderApp();
 
+    await uploadWallImage(user);
+
     await user.click(screen.getByRole('button', { name: /generate patterns/i }));
 
     const firstCard = await screen.findByTestId('pattern-card-generated-pattern-1');
@@ -115,6 +157,8 @@ describe('Pattern Generation Integration Flow', () => {
     const user = userEvent.setup();
     renderApp();
 
+    await uploadWallImage(user);
+
     await user.click(screen.getByRole('button', { name: /generate patterns/i }));
 
     const firstCard = await screen.findByTestId('pattern-card-generated-pattern-1');
@@ -132,18 +176,14 @@ describe('Pattern Generation Integration Flow', () => {
     });
   });
 
-  it('keeps generator route operable after navigation to overlay route', async () => {
+  it('supports repeat generation attempts in the same workspace', async () => {
     const user = userEvent.setup();
     renderApp();
 
+    await uploadWallImage(user);
+
     await user.click(screen.getByRole('button', { name: /generate patterns/i }));
     await screen.findByTestId('pattern-card-generated-pattern-1');
-
-    await user.click(screen.getByRole('link', { name: /overlay/i }));
-    expect(window.location.pathname).toBe(WORKSPACE_ROUTES.overlay);
-
-    await user.click(screen.getByRole('link', { name: /generator/i }));
-    expect(window.location.pathname).toBe(WORKSPACE_ROUTES.generator);
 
     await user.click(screen.getByRole('button', { name: /generate patterns/i }));
 

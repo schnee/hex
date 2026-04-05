@@ -79,7 +79,7 @@ describe('Single-Screen Workspace Integration Flow', () => {
     renderApp();
 
     const generateButton = screen.getByRole('button', {
-      name: /upload wall image first/i,
+      name: /upload wall image to enable/i,
     });
 
     expect(screen.getByTestId('workspace-shell')).toBeInTheDocument();
