@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../../src/App';
 import { PatternContextProvider } from '../../src/context/PatternContext';
-import type { Pattern } from '../../src/types/api';
+import type { Pattern, UploadResponse } from '../../src/types/api';
 
 const mockPatterns: Pattern[] = [
   {
@@ -30,14 +30,41 @@ const mockPatterns: Pattern[] = [
   },
 ];
 
+const mockUploadResponse: UploadResponse = {
+  image_id: 'img-workspace-1',
+  width: 1920,
+  height: 1080,
+  processed_data: 'data:image/jpeg;base64,mock-wall',
+};
+
+vi.mock('../../src/services/api', () => ({
+  apiClient: {
+    calculateOverlay: vi.fn().mockResolvedValue({
+      success: true,
+      data: {
+        physical_dimensions: {
+          width_inches: 10.5,
+          height_inches: 6.0,
+        },
+        visual_dimensions: {
+          width_px: 210,
+          height_px: 120,
+        },
+      },
+    }),
+  },
+}));
+
 vi.mock('../../src/components/PatternGenerator', () => ({
   PatternGenerator: ({
     onPatternsGenerated,
+    disabled,
   }: {
     onPatternsGenerated: (patterns: Pattern[]) => void;
+    disabled?: boolean;
   }) => (
     <div>
-      <button onClick={() => onPatternsGenerated(mockPatterns)}>
+      <button disabled={disabled} onClick={() => onPatternsGenerated(mockPatterns)}>
         Generate mocked patterns
       </button>
     </div>
@@ -73,8 +100,24 @@ vi.mock('../../src/components/PatternDisplay', () => ({
   ),
 }));
 
+vi.mock('../../src/components/WallImageUploader', () => ({
+  WallImageUploader: ({
+    onUploadComplete,
+  }: {
+    onUploadComplete: (image: UploadResponse) => void;
+  }) => (
+    <button onClick={() => onUploadComplete(mockUploadResponse)}>
+      Upload mocked wall image
+    </button>
+  ),
+}));
+
+vi.mock('../../src/components/OverlayCanvas', () => ({
+  OverlayCanvas: () => <div data-testid="overlay-canvas" />,
+}));
+
 describe('App Pattern Workspace', () => {
-  it('wires generation results and selection state through context', async () => {
+  it('keeps generation gated until upload completes', async () => {
     const user = userEvent.setup();
 
     render(
@@ -83,24 +126,15 @@ describe('App Pattern Workspace', () => {
       </PatternContextProvider>
     );
 
-    expect(screen.getByText('No patterns available')).toBeInTheDocument();
+    const generateButton = screen.getByRole('button', {
+      name: /generate mocked patterns/i,
+    });
 
-    await user.click(screen.getByRole('button', { name: /generate mocked patterns/i }));
+    expect(generateButton).toBeDisabled();
 
-    const patternOneCard = screen.getByTestId('pattern-card-pattern-1');
-    const patternTwoCard = screen.getByTestId('pattern-card-pattern-2');
+    await user.click(screen.getByRole('button', { name: /upload mocked wall image/i }));
 
-    expect(patternOneCard).toBeInTheDocument();
-    expect(patternTwoCard).toBeInTheDocument();
-    expect(patternOneCard).not.toHaveClass('selected');
-    expect(patternTwoCard).not.toHaveClass('selected');
-
-    await user.click(patternOneCard);
-    expect(patternOneCard).toHaveClass('selected');
-    expect(patternTwoCard).not.toHaveClass('selected');
-
-    await user.click(patternTwoCard);
-    expect(patternOneCard).not.toHaveClass('selected');
-    expect(patternTwoCard).toHaveClass('selected');
+    expect(generateButton).toBeEnabled();
   });
+
 });

@@ -10,6 +10,7 @@ import type { GenerateRequest, Pattern } from '../types/api';
 
 interface PatternGeneratorProps {
   onPatternsGenerated: (patterns: Pattern[]) => void;
+  disabled?: boolean;
 }
 
 interface FormData {
@@ -57,6 +58,7 @@ const DEFAULT_FORM_DATA: FormData = {
 
 export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
   onPatternsGenerated,
+  disabled = false,
 }) => {
   const [formData, setFormData] = useState<FormData>(DEFAULT_FORM_DATA);
   const [colorCounts, setColorCounts] = useState<number[]>([]);
@@ -193,6 +195,10 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (disabled) {
+      return;
+    }
+
     // Run all validations
     const errors: ValidationErrors = {};
 
@@ -297,10 +303,14 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
 
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isLoading || disabled}
         className={`submit-button ${isLoading ? 'loading' : ''}`}
       >
-        {isLoading ? 'Generating patterns...' : 'Generate Patterns'}
+        {isLoading
+          ? 'Generating patterns...'
+          : disabled
+            ? 'Upload Wall Image First'
+            : 'Generate Patterns'}
       </button>
 
       {submitError && (
@@ -322,6 +332,12 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
   return (
     <div className="pattern-generator">
       <h2>Pattern Generator</h2>
+
+      {disabled && (
+        <p className="overlay-guidance" data-testid="generator-gated-message">
+          Upload a wall image to enable pattern generation controls.
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} className="pattern-form">
         {formActions}
