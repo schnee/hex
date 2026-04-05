@@ -149,7 +149,7 @@ describe('PatternDisplay Component', () => {
     );
   });
 
-  it('covers narrow-width reflow mode by preserving auto grid behavior', () => {
+  it('reflows pattern cards to single-column stacking at narrow widths', () => {
     setViewport(320, 568);
 
     const { rerender } = render(
@@ -159,7 +159,7 @@ describe('PatternDisplay Component', () => {
     const autoGrid = screen.getByTestId('patterns-grid');
     expect(autoGrid).not.toHaveClass('patterns-grid-three-up');
     expect(autoGrid).toHaveStyle({
-      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+      gridTemplateColumns: 'minmax(0, 1fr)',
     });
 
     rerender(
@@ -173,7 +173,7 @@ describe('PatternDisplay Component', () => {
     const threeUpGrid = screen.getByTestId('patterns-grid');
     expect(threeUpGrid).toHaveClass('patterns-grid-three-up');
     expect(threeUpGrid).toHaveStyle({
-      gridTemplateColumns: 'repeat(3, minmax(220px, 1fr))',
+      gridTemplateColumns: '1fr',
     });
   });
 });

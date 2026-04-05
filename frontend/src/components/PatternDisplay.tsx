@@ -34,6 +34,30 @@ export const PatternDisplay: React.FC<PatternDisplayProps> = ({
   const [focusedIndex, setFocusedIndex] = useState<number>(0);
   const gridRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [isNarrowViewport, setIsNarrowViewport] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    return window.innerWidth <= 768;
+  });
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const handleResize = () => {
+      setIsNarrowViewport(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   // Check for high contrast mode
   const isHighContrast = useMemo(() => {
@@ -241,10 +265,14 @@ export const PatternDisplay: React.FC<PatternDisplayProps> = ({
           display: 'grid',
           gridTemplateColumns:
             layout === 'three-up'
-              ? 'repeat(3, minmax(220px, 1fr))'
-              : 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '1.5rem',
-          padding: layout === 'three-up' ? '0.5rem 0 0' : '1rem',
+              ? isNarrowViewport
+                ? '1fr'
+                : 'repeat(3, minmax(220px, 1fr))'
+              : isNarrowViewport
+                ? 'minmax(0, 1fr)'
+                : 'repeat(auto-fill, minmax(280px, 1fr))',
+          gap: isNarrowViewport ? '0.9rem' : '1.5rem',
+          padding: layout === 'three-up' ? '0.5rem 0 0' : '1rem 0',
         }}
       >
         {processedPatterns.map((pattern, index) => {
@@ -298,6 +326,7 @@ export const PatternDisplay: React.FC<PatternDisplayProps> = ({
                     style={{
                       width: '100%',
                       height: '200px',
+                      maxHeight: isNarrowViewport ? '180px' : '200px',
                       objectFit: 'contain',
                       border: '1px solid #eee',
                       borderRadius: '4px',
