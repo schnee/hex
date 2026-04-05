@@ -3,18 +3,19 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../../src/App';
 import { PatternContextProvider } from '../../src/context/PatternContext';
-import { WORKSPACE_ROUTES } from '../../src/routes/workspaceRoutes';
-import type { Pattern } from '../../src/types/api';
+import type { Pattern, UploadResponse } from '../../src/types/api';
 
-const { mockGeneratePatterns } = vi.hoisted(() => ({
+const { mockGeneratePatterns, mockUploadImage, mockCalculateOverlay } = vi.hoisted(() => ({
   mockGeneratePatterns: vi.fn(),
+  mockUploadImage: vi.fn(),
+  mockCalculateOverlay: vi.fn(),
 }));
 
 vi.mock('../../src/services/api', () => ({
   apiClient: {
     generatePatterns: mockGeneratePatterns,
-    calculateOverlay: vi.fn(),
-    uploadImage: vi.fn(),
+    calculateOverlay: mockCalculateOverlay,
+    uploadImage: mockUploadImage,
   },
   downloadPattern: vi.fn(),
 }));
@@ -33,6 +34,13 @@ const generatedPatterns: Pattern[] = [
   },
 ];
 
+const uploadedImage: UploadResponse = {
+  image_id: 'img-routed-1',
+  width: 1920,
+  height: 1080,
+  processed_data: 'data:image/jpeg;base64,mock-wall',
+};
+
 const renderApp = () =>
   render(
     <PatternContextProvider>
@@ -40,57 +48,82 @@ const renderApp = () =>
     </PatternContextProvider>
   );
 
-describe('Routed Workspace Integration Flow', () => {
+describe('Single-Screen Workspace Integration Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGeneratePatterns.mockResolvedValue({
       success: true,
       data: { patterns: generatedPatterns },
     });
-    window.history.pushState({}, '', WORKSPACE_ROUTES.base);
-  });
-
-  it('redirects base route to generator route', async () => {
-    renderApp();
-
-    await waitFor(() => {
-      expect(window.location.pathname).toBe(WORKSPACE_ROUTES.generator);
+    mockUploadImage.mockResolvedValue({
+      success: true,
+      data: uploadedImage,
+    });
+    mockCalculateOverlay.mockResolvedValue({
+      success: true,
+      data: {
+        physical_dimensions: {
+          width_inches: 10,
+          height_inches: 6,
+        },
+        visual_dimensions: {
+          width_px: 240,
+          height_px: 140,
+        },
+      },
     });
   });
 
-  it('keeps selected pattern after navigating to overlay and back', async () => {
+  it('keeps generation disabled until upload succeeds in single workspace', async () => {
     const user = userEvent.setup();
-    window.history.pushState({}, '', WORKSPACE_ROUTES.generator);
     renderApp();
 
-    await user.click(screen.getByRole('button', { name: /generate patterns/i }));
+    const generateButton = screen.getByRole('button', {
+      name: /upload wall image first/i,
+    });
+
+    expect(screen.getByTestId('workspace-shell')).toBeInTheDocument();
+    expect(generateButton).toBeDisabled();
+    expect(screen.queryByRole('link', { name: /overlay/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /generator/i })).not.toBeInTheDocument();
+
+    const file = new File(['wall image'], 'wall.jpg', { type: 'image/jpeg' });
+    await user.upload(screen.getByLabelText(/upload wall image/i), file);
+
+    await waitFor(() => {
+      expect(mockUploadImage).toHaveBeenCalledWith(file);
+      expect(
+        screen.getByRole('button', { name: /generate patterns/i })
+      ).toBeEnabled();
+    });
+  });
+
+  it('supports upload -> generate -> select flow without route switching', async () => {
+    const user = userEvent.setup();
+    renderApp();
+
+    const file = new File(['wall image'], 'wall.jpg', { type: 'image/jpeg' });
+    await user.upload(screen.getByLabelText(/upload wall image/i), file);
+
+    await user.click(await screen.findByRole('button', { name: /generate patterns/i }));
     const patternCard = await screen.findByTestId('pattern-card-pattern-route-1');
     await user.click(patternCard);
 
-    expect(patternCard).toHaveClass('selected');
-
-    await user.click(screen.getByRole('link', { name: /overlay/i }));
-    expect(window.location.pathname).toBe(WORKSPACE_ROUTES.overlay);
-
-    await user.click(screen.getByRole('link', { name: /generator/i }));
-    expect(window.location.pathname).toBe(WORKSPACE_ROUTES.generator);
-
-    expect(await screen.findByTestId('pattern-card-pattern-route-1')).toHaveClass(
-      'selected'
-    );
-  });
-
-  it('uses route links instead of tab-role controls for workspace navigation', () => {
-    renderApp();
-
-    expect(screen.getByRole('link', { name: /generator/i })).toHaveAttribute(
-      'href',
-      WORKSPACE_ROUTES.generator
-    );
-    expect(screen.getByRole('link', { name: /overlay/i })).toHaveAttribute(
-      'href',
-      WORKSPACE_ROUTES.overlay
-    );
-    expect(screen.queryByRole('tab', { name: /overlay/i })).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(patternCard).toHaveClass('selected');
+      expect(mockGeneratePatterns).toHaveBeenCalledTimes(1);
+      expect(mockCalculateOverlay).toHaveBeenCalledWith({
+        image_id: uploadedImage.image_id,
+        pattern_id: generatedPatterns[0]?.id,
+        overlay_state: {
+          left: 80,
+          top: 80,
+          scaleX: 1,
+          scaleY: 1,
+          rotation: 0,
+        },
+      });
+      expect(screen.getByTestId('overlay-canvas')).toBeInTheDocument();
+    });
   });
 });
