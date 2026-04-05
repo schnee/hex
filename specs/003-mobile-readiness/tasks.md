@@ -11,7 +11,7 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 
 - [x] T001 Capture and list reproducible mobile overflow issues in app shell/upload/overlay areas.
 - [x] T004 Add viewport-oriented test scaffolding for overflow invariants.
-- [ ] T008 Apply upload and overlay container width/overflow fixes.
+- [x] T008 Apply upload and overlay container width/overflow fixes.
 - [ ] T011 Reflow pattern cards and control layout for narrow screens.
 - [ ] T014 Validate overlay interaction parity on mobile breakpoints.
 - [ ] T017 Run full frontend validation and record outcomes.
@@ -31,7 +31,7 @@ Phase order is strict: **4.1 Baseline -> 4.2 Overflow Fixes -> 4.3 Responsive Re
 
 ## Phase 4.3: Overflow Fixes and Responsive Reflow
 
-- [ ] T008 Implement app-level overflow guards and width constraints in `frontend/src/App.css`.
+- [x] T008 Implement app-level overflow guards and width constraints in `frontend/src/App.css`.
 - [ ] T009 Implement upload preview and overlay wrapper sizing constraints in `frontend/src/App.css` and/or component styles.
 - [ ] T010 Ensure nested layout containers do not force overflow (`min-width` and flex/grid constraint updates).
 - [ ] T011 Reflow pattern cards for touch-friendly stacking on mobile widths.
