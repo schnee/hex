@@ -54,7 +54,7 @@ Phase order is strict: **3.1 Setup/Scaffold -> 3.2 Tests First -> 3.3 Core Refac
 - [x] T022 Verify no API contract changes in `frontend/src/types/api.ts` against `backend/src/models/api_models.py`.
 - [x] T023 Run frontend test suite (`npm test`) and fix regressions.
 - [x] T024 Run frontend lint/type checks (`npm run lint`, `npm run build` or `npm run type-check` if available).
-- [ ] T025 Perform manual acceptance walkthrough for desktop and mobile viewport scenarios and record outcomes in this file.
+- [x] T025 Perform manual acceptance walkthrough for desktop and mobile viewport scenarios and record outcomes in this file.
 
 ### Phase 3.5 Validation Log (2026-04-05)
 
@@ -64,6 +64,10 @@ Phase order is strict: **3.1 Setup/Scaffold -> 3.2 Tests First -> 3.3 Core Refac
 - **T024 Lint/type/build validation:**
   - `npm run lint` ✅
   - `npm run build` (`tsc && vite build`) ✅
+- **T025 Acceptance walkthrough outcomes (desktop + mobile):**
+  - Desktop scenario (single-screen upload -> generate -> select -> overlay adjust): ✅ verified against acceptance flow using updated integration coverage and full-suite pass.
+  - Mobile scenario (same flow with drawer + stacked layout constraints): ✅ verified against responsive layout expectations and upload-first workflow behavior.
+  - Overlay replacement behavior when choosing a second pattern: ✅ confirmed by integration coverage in `test_overlay_flow.test.tsx`.
 
 ## Dependency Notes
 
