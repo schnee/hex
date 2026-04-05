@@ -293,11 +293,11 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
     <div className="form-actions form-actions-top">
       {operationStatus !== 'idle' && (
         <div className={`operation-status operation-status-${operationStatus}`}>
-          {operationStatus === 'loading' && 'Generating patterns...'}
+          {operationStatus === 'loading' && 'Generating pattern variants...'}
           {operationStatus === 'success' &&
-            'Patterns generated. Select a variant to continue.'}
+            'Patterns generated. Pick a card below to overlay on your wall.'}
           {operationStatus === 'error' &&
-            'Generation failed. Review inputs and try again.'}
+            'Generation failed. Check highlighted inputs and try again.'}
         </div>
       )}
 
@@ -309,14 +309,14 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
         {isLoading
           ? 'Generating patterns...'
           : disabled
-            ? 'Upload Wall Image First'
+            ? 'Upload Wall Image to Enable'
             : 'Generate Patterns'}
       </button>
 
       {submitError && (
         <div className="submit-error">
           {operationStatus === 'error'
-            ? `Failed to generate patterns: ${submitError}`
+            ? `Generation request failed: ${submitError}`
             : submitError}
         </div>
       )}
@@ -335,7 +335,8 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
 
       {disabled && (
         <p className="overlay-guidance" data-testid="generator-gated-message">
-          Upload a wall image to enable pattern generation controls.
+          Upload a wall image above, then use Generate Patterns to create
+          layout options.
         </p>
       )}
 

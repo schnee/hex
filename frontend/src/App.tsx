@@ -213,14 +213,16 @@ export const App: React.FC = () => {
             {!uploadedImage && (
               <div className="upload-primary-cta" data-testid="upload-primary-cta">
                 <p className="overlay-guidance">
-                  Start by uploading a wall image to activate this workspace.
+                  Start by uploading a wall image. Once upload finishes, pattern
+                  generation will unlock below.
                 </p>
               </div>
             )}
 
             {uploadedImage && !selectedPattern && (
               <p className="overlay-guidance">
-                Generate patterns, then select one to begin overlay placement.
+                Generate patterns below, then choose one card to place it on your
+                wall.
               </p>
             )}
 
@@ -265,16 +267,21 @@ export const App: React.FC = () => {
                     </div>
                   </div>
 
-                  {isCalculatingOverlay && <p>Refreshing overlay dimensions...</p>}
+                  {isCalculatingOverlay && (
+                    <p>
+                      Refreshing overlay dimensions after your latest placement
+                      change...
+                    </p>
+                  )}
 
                   {overlayCalcStatus === 'success' && !isCalculatingOverlay && (
-                    <p>Overlay dimensions updated.</p>
+                    <p>Overlay dimensions are up to date.</p>
                   )}
 
                   {overlayCalcStatus === 'error' && !isCalculatingOverlay && (
                     <p>
-                      Overlay update failed. Adjust placement or re-upload image and
-                      retry.
+                      Could not refresh dimensions. Move or resize again, or
+                      re-upload the wall image and retry.
                     </p>
                   )}
 
