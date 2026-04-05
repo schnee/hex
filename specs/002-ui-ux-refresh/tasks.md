@@ -50,8 +50,8 @@ Phase order is strict: **3.1 Setup/Scaffold -> 3.2 Tests First -> 3.3 Core Refac
 
 ## Phase 3.5: Feedback and Validation
 
-- [ ] T021 Confirm upload/generation/overlay loading and error feedback copy is clear and actionable in `frontend/src/App.tsx` and `frontend/src/components/PatternGenerator.tsx`.
-- [ ] T022 Verify no API contract changes in `frontend/src/types/api.ts` against `backend/src/models/api_models.py`.
+- [x] T021 Confirm upload/generation/overlay loading and error feedback copy is clear and actionable in `frontend/src/App.tsx` and `frontend/src/components/PatternGenerator.tsx`.
+- [x] T022 Verify no API contract changes in `frontend/src/types/api.ts` against `backend/src/models/api_models.py`.
 - [ ] T023 Run frontend test suite (`npm test`) and fix regressions.
 - [ ] T024 Run frontend lint/type checks (`npm run lint`, `npm run build` or `npm run type-check` if available).
 - [ ] T025 Perform manual acceptance walkthrough for desktop and mobile viewport scenarios and record outcomes in this file.
