@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useCallback, useMemo, useRef } from 'react';
+import { HelpHint } from './HelpHint';
 import { downloadPattern } from '../services/api';
 import type { Pattern } from '../types/api';
 
@@ -256,6 +257,10 @@ export const PatternDisplay: React.FC<PatternDisplayProps> = ({
 
   return (
     <div className="pattern-display">
+      <HelpHint className="help-hint-inline">
+        Select a pattern card to place it on the wall preview. Hover or focus a
+        card to reveal the download action.
+      </HelpHint>
       <div
         className={`patterns-grid ${layout === 'three-up' ? 'patterns-grid-three-up' : ''} ${isHighContrast ? 'high-contrast' : ''}`}
         data-testid="patterns-grid"
@@ -433,6 +438,7 @@ export const PatternDisplay: React.FC<PatternDisplayProps> = ({
                   onClick={e => handleDownload(pattern, e)}
                   disabled={downloadState === 'downloading'}
                   aria-label={`Download pattern ${pattern.id}`}
+                  title="Download this pattern image as a PNG"
                   style={{
                     position: 'absolute',
                     top: '1rem',

@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import { HelpHint } from './components/HelpHint';
 import { OverlayCanvas } from './components/OverlayCanvas';
 import { PatternDisplay } from './components/PatternDisplay';
 import { PatternGenerator } from './components/PatternGenerator';
@@ -334,6 +335,10 @@ export const App: React.FC = () => {
                   ? 'Collapse generator drawer'
                   : 'Expand generator drawer'}
               </button>
+              <HelpHint className="help-hint-inline">
+                Collapse the generator to focus on previewing overlays; expand
+                it to edit generation settings.
+              </HelpHint>
             </div>
 
             <div
