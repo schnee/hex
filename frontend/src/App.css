@@ -237,6 +237,83 @@
   gap: 0.3rem;
 }
 
+.help-hint {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.help-hint-inline {
+  margin: 0;
+  align-self: flex-start;
+}
+
+.help-hint-trigger {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  width: 1.5rem;
+  height: 1.5rem;
+  min-height: 1.5rem;
+  padding: 0;
+  background: rgba(10, 18, 46, 0.42);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  cursor: help;
+}
+
+.help-hint-tooltip {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  width: max-content;
+  max-width: min(26rem, 78vw);
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(6, 10, 25, 0.95);
+  color: #f5f8ff;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition:
+    opacity 0.14s ease,
+    transform 0.14s ease,
+    visibility 0.14s ease;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.help-hint:hover .help-hint-tooltip,
+.help-hint:focus-within .help-hint-tooltip,
+.help-hint[data-open='true'] .help-hint-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.generator-drawer-toggle-row .help-hint-inline,
+.wall-image-header .help-hint-inline,
+.form-section > .help-hint-inline,
+.color-counts > .help-hint-inline,
+.overlay-viewport-controls .help-hint-inline,
+.overlay-viewport-status .help-hint-inline {
+  margin-left: 0.35rem;
+}
+
+.form-group .help-hint-inline,
+.overlay-canvas > .help-hint-inline,
+.pattern-display > .help-hint-inline {
+  margin-top: 0.1rem;
+}
+
 .form-group label {
   font-size: 0.85rem;
   opacity: 0.92;
@@ -306,6 +383,12 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.wall-image-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .wall-image-label {
@@ -555,8 +638,21 @@ code {
 
   .upload-primary-cta,
   .overlay-guidance,
+  .help-hint-inline,
   .uploaded-wall-preview {
     margin-bottom: 0.4rem;
+  }
+
+  .help-hint-trigger {
+    width: 1.75rem;
+    height: 1.75rem;
+    min-height: 1.75rem;
+  }
+
+  .help-hint-tooltip {
+    left: auto;
+    right: 0;
+    max-width: min(19rem, calc(100vw - 2rem));
   }
 
   .workspace-layout {

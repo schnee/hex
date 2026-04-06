@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import Draggable from 'react-draggable';
 import { Resizable } from 'react-resizable';
+import { HelpHint } from './HelpHint';
 import type { OverlayState, Pattern, UploadResponse } from '../types/api';
 
 interface OverlayViewerProps {
@@ -257,6 +258,7 @@ export const OverlayViewer: React.FC<OverlayViewerProps> = ({
             data-testid="rotation-handle"
             aria-label="rotate pattern overlay"
             onMouseDown={handleRotationStart}
+            title="Drag after pressing to rotate the overlay"
           >
             Rotate
           </button>
@@ -267,6 +269,10 @@ export const OverlayViewer: React.FC<OverlayViewerProps> = ({
 
   return (
     <div>
+      <HelpHint className="help-hint-inline">
+        Drag the overlay to move it, use arrow keys for fine nudges, and use
+        Rotate to adjust angle when enabled.
+      </HelpHint>
       <img src={wallImage.processed_data} alt="Wall background" />
 
       {enableDrag ? (

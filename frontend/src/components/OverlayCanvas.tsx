@@ -4,6 +4,7 @@ import Draggable, {
   type DraggableEvent,
 } from 'react-draggable';
 import { ResizableBox, type ResizeCallbackData } from 'react-resizable';
+import { HelpHint } from './HelpHint';
 import type { OverlayState } from '../types/api';
 
 interface OverlayCanvasProps {
@@ -151,6 +152,10 @@ export const OverlayCanvas: React.FC<OverlayCanvasProps> = ({
         >
           Pan Down
         </button>
+        <HelpHint className="help-hint-inline">
+          Viewport controls adjust your camera view only. They do not move or
+          resize the selected pattern overlay.
+        </HelpHint>
       </div>
 
       <div
@@ -162,6 +167,10 @@ export const OverlayCanvas: React.FC<OverlayCanvasProps> = ({
         </span>
         <span data-testid="viewport-offset-x-value">{viewportOffsetX}</span>
         <span data-testid="viewport-offset-y-value">{viewportOffsetY}</span>
+        <HelpHint className="help-hint-inline">
+          Status values show zoom scale plus horizontal and vertical viewport
+          offsets.
+        </HelpHint>
       </div>
 
       <div className="overlay-stage-viewport">
@@ -238,6 +247,10 @@ export const OverlayCanvas: React.FC<OverlayCanvasProps> = ({
           </Draggable>
         </div>
       </div>
+      <HelpHint className="help-hint-inline">
+        Click the overlay to select it, drag to reposition, and use the corner
+        handle to resize.
+      </HelpHint>
 
       {patternLoadError && (
         <p role="alert">Pattern image failed to load. Re-select a pattern.</p>

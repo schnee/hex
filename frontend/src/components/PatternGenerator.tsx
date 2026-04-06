@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useCallback, useMemo } from 'react';
+import { HelpHint } from './HelpHint';
 import { apiClient } from '../services/api';
 import type { GenerateRequest, Pattern } from '../types/api';
 
@@ -439,6 +440,10 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
             {/* Aspect Ratio Configuration */}
             <div className="form-section">
               <h3>Aspect Ratio</h3>
+              <HelpHint className="help-hint-inline">
+                Use these controls to guide the overall width-to-height shape of
+                generated layouts.
+              </HelpHint>
 
               <div className="form-group">
                 <label htmlFor="aspect_w">Aspect Width:</label>
@@ -457,6 +462,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                     handleFieldBlur('aspect_w', parseFloat(e.target.value) || 0)
                   }
                 />
+                <HelpHint className="help-hint-inline">
+                  Target horizontal proportion.
+                </HelpHint>
                 {validationErrors.aspect_w && (
                   <span className="error">{validationErrors.aspect_w}</span>
                 )}
@@ -479,6 +487,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                     handleFieldBlur('aspect_h', parseFloat(e.target.value) || 0)
                   }
                 />
+                <HelpHint className="help-hint-inline">
+                  Target vertical proportion.
+                </HelpHint>
                 {validationErrors.aspect_h && (
                   <span className="error">{validationErrors.aspect_h}</span>
                 )}
@@ -500,12 +511,19 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                     )
                   }
                 />
+                <HelpHint className="help-hint-inline">
+                  Higher values keep results closer to the target aspect ratio.
+                </HelpHint>
               </div>
             </div>
 
             {/* Basic Pattern Configuration */}
             <div className="form-section">
               <h3>Pattern Configuration</h3>
+              <HelpHint className="help-hint-inline">
+                Control how many layout variants to generate and whether runs
+                are repeatable.
+              </HelpHint>
 
               <div className="form-group">
                 <label htmlFor="computed_total_tiles">Total Tiles:</label>
@@ -519,6 +537,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                 <span className="overlay-guidance">
                   Calculated from Color Distribution counts.
                 </span>
+                <HelpHint className="help-hint-inline">
+                  This is read-only and updates as color counts change.
+                </HelpHint>
               </div>
 
               <div className="form-group">
@@ -536,6 +557,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                     )
                   }
                 />
+                <HelpHint className="help-hint-inline">
+                  Number of candidate layouts returned per generation request.
+                </HelpHint>
               </div>
 
               <div className="form-group">
@@ -551,6 +575,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                     handleFieldBlur('seed', parseInt(e.target.value) || 0)
                   }
                 />
+                <HelpHint className="help-hint-inline">
+                  Reuse a seed value to reproduce a similar pattern set.
+                </HelpHint>
                 {validationErrors.seed && (
                   <span className="error">{validationErrors.seed}</span>
                 )}
@@ -560,6 +587,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
             {/* Tendril Configuration */}
             <div className="form-section">
               <h3>Tendril Configuration</h3>
+              <HelpHint className="help-hint-inline">
+                Tune branch-like growth behavior for organic pattern edges.
+              </HelpHint>
 
               <div className="form-group">
                 <label htmlFor="tendrils">Tendrils:</label>
@@ -573,6 +603,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                     handleFieldChange('tendrils', parseInt(e.target.value) || 0)
                   }
                 />
+                <HelpHint className="help-hint-inline">
+                  How many tendril branches to add.
+                </HelpHint>
               </div>
 
               <div className="form-group">
@@ -590,6 +623,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                     )
                   }
                 />
+                <HelpHint className="help-hint-inline">
+                  Shortest allowed branch length for generated tendrils.
+                </HelpHint>
               </div>
 
               <div className="form-group">
@@ -613,6 +649,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                     )
                   }
                 />
+                <HelpHint className="help-hint-inline">
+                  Longest allowed branch length; keep at or above the minimum.
+                </HelpHint>
                 {validationErrors.tendril_len_max && (
                   <span className="error">
                     {validationErrors.tendril_len_max}
@@ -624,6 +663,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
             {/* Visual Configuration */}
             <div className="form-section">
               <h3>Visual Configuration</h3>
+              <HelpHint className="help-hint-inline">
+                Adjust visual rendering scale for pattern preview and output.
+              </HelpHint>
 
               <div className="form-group">
                 <label htmlFor="radius">Radius:</label>
@@ -641,6 +683,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                     )
                   }
                 />
+                <HelpHint className="help-hint-inline">
+                  Multiplies base hex size in the generated image.
+                </HelpHint>
               </div>
             </div>
           </div>
@@ -648,6 +693,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
           <div className="form-section form-section-color">
             {/* Color Configuration */}
             <h3>Color Configuration</h3>
+            <HelpHint className="help-hint-inline">
+              Define the palette strategy and tile distribution for each color.
+            </HelpHint>
 
             <div className="form-group">
               <label htmlFor="color_mode">Color Mode:</label>
@@ -665,6 +713,10 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                 <option value="gradient">Gradient</option>
                 <option value="scheme60">Scheme60</option>
               </select>
+              <HelpHint className="help-hint-inline">
+                Random shuffles colors, Gradient follows an axis, Scheme60 uses
+                role-based weighting.
+              </HelpHint>
             </div>
 
             <div className="form-group">
@@ -679,6 +731,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                 onBlur={e => handleFieldBlur('colors', e.target.value)}
                 placeholder="#273c6b, #92323d, #D8C03F"
               />
+              <HelpHint className="help-hint-inline">
+                Enter one or more `#RRGGBB` values separated by commas.
+              </HelpHint>
               {validationErrors.colors && (
                 <span className="error">{validationErrors.colors}</span>
               )}
@@ -704,6 +759,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                     <option value="y">Y-axis</option>
                     <option value="principal">Principal</option>
                   </select>
+                  <HelpHint className="help-hint-inline">
+                    Chooses the direction used to transition colors.
+                  </HelpHint>
                 </div>
 
                 <div className="form-group">
@@ -723,6 +781,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                       );
                     }}
                   />
+                  <HelpHint className="help-hint-inline">
+                    Optional comma-separated palette order (by color index).
+                  </HelpHint>
                 </div>
               </>
             )}
@@ -754,6 +815,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                       </option>
                     ))}
                   </select>
+                  <HelpHint className="help-hint-inline">
+                    Assigns which palette color receives the primary role.
+                  </HelpHint>
                 </div>
 
                 <div className="form-group">
@@ -780,6 +844,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                       </option>
                     ))}
                   </select>
+                  <HelpHint className="help-hint-inline">
+                    Assigns the secondary role color when Scheme60 is active.
+                  </HelpHint>
                 </div>
 
                 <div className="form-group">
@@ -806,6 +873,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                       </option>
                     ))}
                   </select>
+                  <HelpHint className="help-hint-inline">
+                    Assigns the accent role color for highlights.
+                  </HelpHint>
                 </div>
               </>
             )}
@@ -814,6 +884,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
             {colorCounts.length > 0 && (
               <div className="color-counts">
                 <h4>Color Distribution</h4>
+                <HelpHint className="help-hint-inline">
+                  Set how many tiles each listed color should occupy.
+                </HelpHint>
                 {colorCounts.map((count, index) => (
                   <div key={index} className="form-group">
                     <label htmlFor={`color_${index + 1}_count`}>
@@ -846,6 +919,9 @@ export const PatternGenerator: React.FC<PatternGeneratorProps> = ({
                         }
                       }}
                     />
+                    <HelpHint className="help-hint-inline">
+                      Number of tiles allocated to color {index + 1}.
+                    </HelpHint>
                   </div>
                 ))}
                 {validationErrors.colorCounts && (

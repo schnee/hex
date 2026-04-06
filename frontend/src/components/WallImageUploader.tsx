@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { HelpHint } from './HelpHint';
 import { apiClient } from '../services/api';
 import type { UploadResponse } from '../types/api';
 
@@ -70,9 +71,15 @@ export const WallImageUploader: React.FC<WallImageUploaderProps> = ({
 
   return (
     <div className="wall-image-uploader">
-      <label className="wall-image-label" htmlFor="wall-image-upload">
-        Upload wall image
-      </label>
+      <div className="wall-image-header">
+        <label className="wall-image-label" htmlFor="wall-image-upload">
+          Upload wall image
+        </label>
+        <HelpHint className="help-hint-inline">
+          Choose a clear wall photo (JPG, PNG, or GIF) to unlock pattern
+          generation and overlay placement.
+        </HelpHint>
+      </div>
       <input
         className="wall-image-input"
         id="wall-image-upload"
